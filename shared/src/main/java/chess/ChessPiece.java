@@ -66,6 +66,70 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        return new ArrayList<>();
+        Collection<ChessMove> possibleMoves = new ArrayList<>();
+        switch(type) {
+            case KING:
+                possibleMoves.addAll(kingMoves(board, myPosition));
+                break;
+            case QUEEN:
+//                possibleMoves.addAll(queenMoves(board, myPosition));
+//                break;
+            case BISHOP:
+                possibleMoves.addAll(bishopMoves(board, myPosition));
+                break;
+            case KNIGHT:
+            case ROOK:
+            case PAWN:
+            case null:
+        }
+        return possibleMoves;
+    }
+
+    private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> kingMove = new ArrayList<>();
+        for (int row = -1; row <= 1; row++) {
+            for (int col = -1; col <= 1; col++) {
+                if (row == 0 && col == 0) {
+                    continue;
+                }
+
+                int newRow = myPosition.getRow() + row;
+                int newCol = myPosition.getColumn() + col;
+
+                if (isValid(newRow, newCol)) {
+                    ChessPosition newPosition = new ChessPosition(newRow + 1, newCol + 1);
+                    ChessMove move = new ChessMove(myPosition, newPosition, null);
+                    kingMove.add(move);
+                }
+            }
+        }
+        return kingMove;
+    }
+
+    private Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> bishopMove = new ArrayList<>();
+        for (int row = -1; row <= 1; row += 2) {
+            for (int col = -1; col <= 1; col += 2) {
+                for (int travel = 1; travel <= 7; travel++) {
+                    int newRow = myPosition.getRow() + row * travel;
+                    int newCol = myPosition.getColumn() + col * travel;
+
+                    if (isValid(newRow, newCol)) {
+                        ChessPosition newPosition = new ChessPosition(newRow + 1, newCol + 1);
+                        ChessMove move = new ChessMove(myPosition, newPosition, null);
+                        bishopMove.add(move);
+                    }
+                }
+            }
+        }
+        return bishopMove;
+    }
+
+//    private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition) {
+//        Collection<ChessMove> queenMove = new ArrayList<>();
+//    }
+
+    private boolean isValid(int row, int col) {
+        return row >= 0 && row < 8 && col >= 0 && col < 8;
     }
 }
