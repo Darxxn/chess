@@ -50,7 +50,7 @@ public class ChessMove {
         if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
         ChessMove chessMove = (ChessMove) object;
-        return Objects.equals(startPosition, chessMove.startPosition) && Objects.equals(endPosition, chessMove.endPosition) && promotionPiece == chessMove.promotionPiece;
+        return Objects.deepEquals(startPosition, chessMove.startPosition) && Objects.deepEquals(endPosition, chessMove.endPosition) && Objects.deepEquals(promotionPiece, chessMove.promotionPiece);
     }
 
     @Override
