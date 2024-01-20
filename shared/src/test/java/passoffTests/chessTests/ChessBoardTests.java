@@ -3,6 +3,8 @@ package passoffTests.chessTests;
 import chess.*;
 import org.junit.jupiter.api.*;
 
+import java.util.Arrays;
+
 import static passoffTests.TestFactory.*;
 
 public class ChessBoardTests {

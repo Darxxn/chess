@@ -1,5 +1,6 @@
 package chess;
 
+import javax.sound.midi.SysexMessage;
 import java.util.Arrays;
 
 /**
@@ -9,6 +10,11 @@ import java.util.Arrays;
  * signature of the existing methods.
  */
 public class ChessBoard {
+
+    private ChessPiece[][] squares = new ChessPiece[8][8];
+    public ChessBoard() {
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
@@ -20,10 +26,6 @@ public class ChessBoard {
     @Override
     public int hashCode() {
         return Arrays.deepHashCode(squares);
-    }
-
-    private ChessPiece[][] squares = new ChessPiece[8][8];
-    public ChessBoard() {
     }
 
     /**
@@ -47,6 +49,7 @@ public class ChessBoard {
         return squares[position.getRow()][position.getColumn()];
     }
 
+
     /**
      * Sets the board to the default starting board
      * (How the game of chess normally starts)
@@ -69,7 +72,6 @@ public class ChessBoard {
     squares[0][7] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
     for (int i = 0; i < 8; i++) {
         squares[1][i] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
-
     }
 
     //black team
@@ -81,7 +83,6 @@ public class ChessBoard {
     squares[7][5] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
     squares[7][6] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
     squares[7][7] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
-    // make a loop
      for (int i = 0; i < 8; i++) {
          squares[6][i] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
      }
