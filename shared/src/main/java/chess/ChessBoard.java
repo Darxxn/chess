@@ -55,11 +55,6 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-//    for (int row = 0; row < 8; row++) {
-//        for (int col = 0; col < 8; col++){
-//            squares[row][col] = null;
-//        }
-//    }
     //white team
     squares[0][0] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
     squares[0][1] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
