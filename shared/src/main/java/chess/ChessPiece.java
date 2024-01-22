@@ -78,6 +78,8 @@ public class ChessPiece {
                 possibleMoves.addAll(bishopMoves(board, myPosition));
                 break;
             case KNIGHT:
+                possibleMoves.addAll(knightMoves(board, myPosition));
+                break;
             case ROOK:
                 possibleMoves.addAll(rookMoves(board, myPosition));
                 break;
@@ -155,6 +157,25 @@ public class ChessPiece {
         return bishopMove;
     }
 
+    private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> knightMove = new ArrayList<>();
+        int [] possibleRows = {-2, -1, 1, 2, 2, 1, -1, -2};
+        int [] possibleCols = {1, 2, 2, 1, -1, -2, -2, -1};
+
+        for (int i = 0; i < 8; i++) {
+            int newRow = myPosition.getRow() + possibleRows[i];
+            int newCol = myPosition.getColumn() + possibleCols[i];
+
+            if (isValid(board, newRow + 1, newCol + 1)) {
+                ChessPiece chessP = board.getPiece(new ChessPosition(newRow + 1, newCol + 1));
+                ChessPosition newPosition = new ChessPosition(newRow + 1, newCol + 1);
+                ChessMove move = new ChessMove(myPosition, newPosition, null);
+                knightMove.add(move);
+            }
+        }
+        return knightMove;
+    }
+
     private Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> rookMove = new ArrayList<>();
         for (int row = -1; row <= 1; row++) {
@@ -171,12 +192,17 @@ public class ChessPiece {
                 int newCol = myPosition.getColumn() + col;
 
                 while(isValid(board, newRow + 1, newCol + 1)) {
+                    ChessPiece chessP = board.getPiece(new ChessPosition(newRow + 1, newCol + 1));
                     ChessPosition newPosition = new ChessPosition(newRow + 1, newCol + 1);
                     ChessMove move = new ChessMove(myPosition, newPosition, null);
                     rookMove.add(move);
 
                     newRow += row;
                     newCol += col;
+
+                    if (chessP != null) {
+                        break;
+                    }
                 }
             }
         }
@@ -226,27 +252,6 @@ public class ChessPiece {
         }
         ChessPiece square = board.getPiece(new ChessPosition(row, col));
         return square == null || square.getTeamColor() != this.pieceColor;
-    }
-
-    private boolean isPathBlocked(ChessBoard board, ChessPosition startPos, ChessPosition endPos) {
-        int rowChange = endPos.getRow() - startPos.getRow();
-        int colChange = endPos.getColumn() -startPos.getColumn();
-
-        int row = Integer.compare(rowChange, 0);
-        int col = Integer.compare(colChange, 0);
-
-        int checkRow = startPos.getRow() + row;
-        int checkCol = startPos.getColumn() + col;
-
-        while (checkRow != endPos.getRow() || checkCol != endPos.getColumn()) {
-            if (board.getPiece(new ChessPosition(checkRow, checkCol)) != null) {
-                return true;
-            }
-
-            checkRow += row;
-            checkCol += col;
-        }
-        return false;
     }
 
     private boolean startingPosPawn(ChessPosition myPosition, ChessGame.TeamColor teamColor) {
