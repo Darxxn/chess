@@ -132,13 +132,22 @@ public class ChessPiece {
         for (int row = -1; row <= 1; row += 2) {
             for (int col = -1; col <= 1; col += 2) {
                 for (int travel = 1; travel <= 7; travel++) {
+
                     int newRow = myPosition.getRow() + row * travel;
                     int newCol = myPosition.getColumn() + col * travel;
 
+                    if(!isValid(board, newRow + 1, newCol + 1)) {
+                        break;
+                    }
+
                     if (isValid(board, newRow + 1, newCol + 1)) {
+                        ChessPiece chessP = board.getPiece(new ChessPosition(newRow + 1, newCol + 1));
                         ChessPosition newPosition = new ChessPosition(newRow + 1, newCol + 1);
                         ChessMove move = new ChessMove(myPosition, newPosition, null);
                         bishopMove.add(move);
+                        if (chessP != null) {
+                            break;
+                        }
                     }
                 }
             }
@@ -217,6 +226,27 @@ public class ChessPiece {
         }
         ChessPiece square = board.getPiece(new ChessPosition(row, col));
         return square == null || square.getTeamColor() != this.pieceColor;
+    }
+
+    private boolean isPathBlocked(ChessBoard board, ChessPosition startPos, ChessPosition endPos) {
+        int rowChange = endPos.getRow() - startPos.getRow();
+        int colChange = endPos.getColumn() -startPos.getColumn();
+
+        int row = Integer.compare(rowChange, 0);
+        int col = Integer.compare(colChange, 0);
+
+        int checkRow = startPos.getRow() + row;
+        int checkCol = startPos.getColumn() + col;
+
+        while (checkRow != endPos.getRow() || checkCol != endPos.getColumn()) {
+            if (board.getPiece(new ChessPosition(checkRow, checkCol)) != null) {
+                return true;
+            }
+
+            checkRow += row;
+            checkCol += col;
+        }
+        return false;
     }
 
     private boolean startingPosPawn(ChessPosition myPosition, ChessGame.TeamColor teamColor) {
