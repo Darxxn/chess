@@ -211,8 +211,13 @@ public class ChessPiece {
 
     private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> pawnMove = new ArrayList<>();
+        Collection<ChessMove> promoted = new ArrayList<>();
 
         int direction = (pieceColor == ChessGame.TeamColor.WHITE) ? 1 : -1;
+        int promotionRow = (pieceColor == ChessGame.TeamColor.WHITE) ? 6 : 1;
+        int startRow = (pieceColor == ChessGame.TeamColor.WHITE) ? 1 : 6;
+
+        //
 
         // Single move forward
         int newRow = myPosition.getRow() + direction;
@@ -225,24 +230,26 @@ public class ChessPiece {
                 pawnMove.add(move);
 
                 // Double move on initial position
-                if ((pieceColor == ChessGame.TeamColor.WHITE && myPosition.getRow() == 2)
-                        || (pieceColor == ChessGame.TeamColor.BLACK && myPosition.getRow() == 7)) {
-                    int doubleMoveRow = myPosition.getRow() + 2 * direction;
-                    int doubleMoveCol = myPosition.getColumn();
-                    if (isValid(board, doubleMoveRow + 1, doubleMoveCol + 1)) {
-                        ChessPiece doubleMovePiece = board.getPiece(new ChessPosition(doubleMoveRow + 1, doubleMoveCol + 1));
-                        if (doubleMovePiece == null) {
-                            // Valid double move
-                            ChessMove doubleMove = new ChessMove(myPosition, new ChessPosition(doubleMoveRow + 1, doubleMoveCol + 1), null);
-                            pawnMove.add(doubleMove);
-                        }
+                if (startRow == myPosition.getRow() && pieceColor == ChessGame.TeamColor.WHITE) {
+                    ChessMove doubleMove = new ChessMove(myPosition, new ChessPosition(newRow + 2, newCol + 1), null);
+                    ChessPiece chessP = board.getPiece(new ChessPosition(newRow + 2, newCol + 1));
+                    if (chessP == null) {
+                        pawnMove.add(doubleMove);
+                    }
+                }
+
+                if (startRow == myPosition.getRow() && pieceColor == ChessGame.TeamColor.BLACK) {
+                    ChessMove doubleMove = new ChessMove(myPosition, new ChessPosition(newRow, newCol + 1), null);
+                    ChessPiece chessP = board.getPiece(new ChessPosition(newRow, newCol + 1));
+                    if (chessP == null) {
+                        pawnMove.add(doubleMove);
                     }
                 }
             }
         }
 
         // Diagonal capture moves
-        int[] captureCols = { -1, 1 };
+        int[] captureCols = {-1, 1};
         for (int captureCol : captureCols) {
             int captureRow = myPosition.getRow() + direction;
             int captureColAdjusted = myPosition.getColumn() + captureCol;
@@ -255,7 +262,25 @@ public class ChessPiece {
                 }
             }
         }
-        return pawnMove;
+        if (myPosition.getRow() == promotionRow) {
+            for (ChessMove move : pawnMove) {
+                // Promotion to Queen
+                promoted.add(new ChessMove(myPosition, new ChessPosition(move.getEndPosition().getRow() + 1, move.getEndPosition().getColumn() + 1), ChessPiece.PieceType.QUEEN));
+                // Promotion to Bishop
+                promoted.add(new ChessMove(myPosition, new ChessPosition(move.getEndPosition().getRow() + 1, move.getEndPosition().getColumn() + 1), ChessPiece.PieceType.BISHOP));
+                // Promotion to Rook
+                promoted.add(new ChessMove(myPosition, new ChessPosition(move.getEndPosition().getRow() + 1, move.getEndPosition().getColumn() + 1), ChessPiece.PieceType.ROOK));
+                // Promotion to Knight
+                promoted.add(new ChessMove(myPosition, new ChessPosition(move.getEndPosition().getRow() + 1, move.getEndPosition().getColumn() + 1), ChessPiece.PieceType.KNIGHT));
+            }
+        }
+
+        if (promoted.isEmpty()) {
+            return pawnMove;
+        }
+        else{
+            return promoted;
+        }
     }
 
 
