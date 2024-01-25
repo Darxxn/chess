@@ -219,10 +219,10 @@ public class ChessPiece {
         // Single move forward
         int newRow = myPosition.getRow() + direction;
         int newCol = myPosition.getColumn();
+
         if (isValid(board, newRow + 1, newCol + 1)) {
             ChessPiece destinationPiece = board.getPiece(new ChessPosition(newRow + 1, newCol + 1));
             if (destinationPiece == null) {
-                // Valid single move
                 ChessMove move = new ChessMove(myPosition, new ChessPosition(newRow + 1, newCol + 1), null);
                 pawnMove.add(move);
 
@@ -247,13 +247,15 @@ public class ChessPiece {
 
         // Diagonal capture moves
         int[] captureCols = {-1, 1};
+
         for (int captureCol : captureCols) {
             int captureRow = myPosition.getRow() + direction;
             int captureColAdjusted = myPosition.getColumn() + captureCol;
+
             if (isValid(board, captureRow + 1, captureColAdjusted + 1)) {
                 ChessPiece capturePiece = board.getPiece(new ChessPosition(captureRow + 1, captureColAdjusted + 1));
+
                 if (capturePiece != null && capturePiece.getTeamColor() != pieceColor) {
-                    // Valid capture move
                     ChessMove captureMove = new ChessMove(myPosition, new ChessPosition(captureRow + 1, captureColAdjusted + 1), null);
                     pawnMove.add(captureMove);
                 }
