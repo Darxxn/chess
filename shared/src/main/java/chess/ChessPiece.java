@@ -167,7 +167,6 @@ public class ChessPiece {
             int newCol = myPosition.getColumn() + possibleCols[i];
 
             if (isValid(board, newRow + 1, newCol + 1)) {
-                ChessPiece chessP = board.getPiece(new ChessPosition(newRow + 1, newCol + 1));
                 ChessPosition newPosition = new ChessPosition(newRow + 1, newCol + 1);
                 ChessMove move = new ChessMove(myPosition, newPosition, null);
                 knightMove.add(move);
@@ -216,8 +215,6 @@ public class ChessPiece {
         int direction = (pieceColor == ChessGame.TeamColor.WHITE) ? 1 : -1;
         int promotionRow = (pieceColor == ChessGame.TeamColor.WHITE) ? 6 : 1;
         int startRow = (pieceColor == ChessGame.TeamColor.WHITE) ? 1 : 6;
-
-        //
 
         // Single move forward
         int newRow = myPosition.getRow() + direction;
@@ -289,6 +286,6 @@ public class ChessPiece {
             return false;
         }
         ChessPiece square = board.getPiece(new ChessPosition(row, col));
-        return square == null || square.getTeamColor() != this.pieceColor;
+        return square == null || square.getTeamColor() != pieceColor;
     }
-    }
+}
