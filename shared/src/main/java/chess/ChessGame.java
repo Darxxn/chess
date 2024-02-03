@@ -52,16 +52,12 @@ public class ChessGame {
      * startPosition
      */
 
-    public Collection<ChessMove> getValidMoves(ChessPosition startPosition) {
+    public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = this.chessBoard.getPiece(startPosition);
         if (piece != null) {
             return piece.pieceMoves(this.chessBoard, startPosition);
         }
         return null;
-    }
-
-    public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        return getValidMoves(startPosition);
     }
 
     private void switchTurn() {
@@ -77,7 +73,7 @@ public class ChessGame {
     public void makeMove(ChessMove move) throws InvalidMoveException {
         ChessPiece piece = chessBoard.getPiece(move.getStartPosition());
         if (piece != null && piece.getTeamColor() == currentTurn) {
-            Collection<ChessMove> validMoves = getValidMoves(move.getStartPosition());
+            Collection<ChessMove> validMoves = validMoves(move.getStartPosition());
 
             if (validMoves != null && validMoves.contains(move)) {
                 if (move.getPromotionPiece() != null) {
