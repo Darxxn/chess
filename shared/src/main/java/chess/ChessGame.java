@@ -84,21 +84,17 @@ public class ChessGame {
                     ChessPiece promotedPiece = new ChessPiece(piece.getTeamColor(), move.getPromotionPiece());
                     this.chessBoard.addPiece(move.getEndPosition(), promotedPiece);
                 }
-
                 else {
                     this.chessBoard.addPiece(move.getEndPosition(), piece);
                 }
-
                 this.chessBoard.addPiece(move.getStartPosition(), null);
-
                 switchTurn();
-
-            } else {
-                throw new InvalidMoveException("Invalid move");
             }
-        } else {
+        }
+
+        else {
             throw new InvalidMoveException("Invalid move");
-        };
+        }
     }
 
     /**
