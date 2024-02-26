@@ -20,7 +20,7 @@ public class UserData {
 
     public void createUsers(String username, String password, String email) throws DataAccessException {
         if (username == null || password == null || email == null) {
-            throw new DataAccessException("Missing info");
+            throw new DataAccessException("Missing required info");
         }
         model.UserData newUser = new model.UserData(username, password, email);
         users.add(newUser);
