@@ -9,6 +9,7 @@ import request.RegisterRequest;
 public class UserService {
 
     private final MemoryUserDAO userDAO = new MemoryUserDAO();
+
     public void clear() {
         userDAO.deleteAllGames();
     }
