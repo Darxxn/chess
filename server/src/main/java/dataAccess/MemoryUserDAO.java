@@ -1,5 +1,22 @@
 package dataAccess;
 
-public interface MemoryUserDAO {
-    String createUser(String username, String password, String email);
+import service.UserService;
+import model.UserData;
+
+import java.util.HashMap;
+
+public class MemoryUserDAO {
+    private final HashMap<String, UserData> userDataHashMap = new HashMap<String, UserData>();
+
+    public void createUser(UserData user) {
+        userDataHashMap.put(user.username(), user);
+    }
+
+    public UserData readUser(String username) {
+        return userDataHashMap.get(username);
+    }
+
+    public void deleteAllGames() {
+        userDataHashMap.clear();
+    }
 }
