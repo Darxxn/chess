@@ -6,8 +6,6 @@ import model.UserData;
 import request.LoginRequest;
 import request.RegisterRequest;
 
-import javax.xml.crypto.Data;
-
 public class UserService {
 
     private final MemoryUserDAO userDAO = new MemoryUserDAO();

@@ -30,6 +30,12 @@ public class DataService {
             throw new DataAccessException("Error: unauthorized");
         }
     }
+
+    public void verify(String authToken) throws DataAccessException {
+        if(authDAO.readAuth(authToken) == null){
+            throw new DataAccessException("error: unauthorized");
+        }
+    }
 }
 
 

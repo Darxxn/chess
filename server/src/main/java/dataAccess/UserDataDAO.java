@@ -2,7 +2,7 @@ package dataAccess;
 
 import java.util.ArrayList;
 
-public class UserData {
+public class UserDataDAO {
     private final ArrayList<model.UserData> users = new ArrayList<>();
 
     public model.UserData getUser(String username) throws DataAccessException {

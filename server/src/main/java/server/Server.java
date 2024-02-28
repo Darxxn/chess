@@ -1,11 +1,11 @@
 package server;
 
 import dataAccess.DataAccessException;
+import request.CreateGameRequest;
 import request.LoginRequest;
 import request.RegisterRequest;
-import response.*;
+import result.*;
 import spark.*;
-import model.*;
 import com.google.gson.Gson;
 import service.*;
 
@@ -51,8 +51,8 @@ public class Server {
     }
 
     private Object loginUser(Request req, Response res) throws DataAccessException {
-        LoginRequest login = new Gson().fromJson(req.body(), LoginRequest.class);
         try {
+            LoginRequest login = new Gson().fromJson(req.body(), LoginRequest.class);
             String username = userService.login(login);
             String authToken = authService.login(login);
             LoginResponse response = new LoginResponse(username, authToken);
@@ -66,7 +66,17 @@ public class Server {
 
 
     private Object createGame(Request req, Response res) throws DataAccessException {
-        return 0;
+        String authToken = req.headers("authorization");
+        CreateGameRequest newGame = new Gson().fromJson(req.body(), CreateGameRequest.class);
+        try {
+            authService.verify(authToken);
+            CreateGameResponse newResponse = gameService.createGame(newGame);
+            res.status(200);
+            return new Gson().toJson( newResponse, CreateGameResponse.class);
+        }
+        catch(DataAccessException exception) {
+            return ErrorMethod(exception, res);
+        }
     }
 
     private Object logout(Request req, Response res) throws DataAccessException {
