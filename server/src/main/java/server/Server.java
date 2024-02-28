@@ -70,7 +70,15 @@ public class Server {
     }
 
     private Object logout(Request req, Response res) throws DataAccessException {
-        return 0;
+        String authToken = req.headers("authorization");
+        try {
+            authService.logout(authToken);
+            res.status(200);
+            return "{}";
+        }
+        catch(DataAccessException exception) {
+            return ErrorMethod(exception, res);
+        }
     }
 
     private Object clearApplication(Request req, Response res) throws DataAccessException {

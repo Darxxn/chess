@@ -1,8 +1,11 @@
 package service;
 
+import dataAccess.DataAccessException;
 import dataAccess.MemoryAuthDAO;
 import request.LoginRequest;
 import request.RegisterRequest;
+
+import javax.xml.crypto.Data;
 
 public class DataService {
 
@@ -17,6 +20,15 @@ public class DataService {
 
     public String login(LoginRequest login) {
         return authDAO.createAuth(login.username());
+    }
+
+    public void logout(String authToken) throws DataAccessException {
+        if(authDAO.readAuth(authToken) != null) {
+            authDAO.deleteAuth(authToken);
+        }
+        else {
+            throw new DataAccessException("Error: unauthorized");
+        }
     }
 }
 

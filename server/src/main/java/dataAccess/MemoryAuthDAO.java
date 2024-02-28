@@ -18,4 +18,12 @@ public class MemoryAuthDAO {
     public void deleteAllAuthData() {
         authDataHashMap.clear();
     }
+
+    public AuthData readAuth(String authToken) {
+        return authDataHashMap.get(authToken);
+    }
+
+    public void deleteAuth(String authToken) {
+        authDataHashMap.remove(authToken);
+    }
 }
