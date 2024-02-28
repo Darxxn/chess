@@ -2,6 +2,8 @@ package dataAccess;
 
 import model.GameData;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MemoryGameDAO {
@@ -13,5 +15,13 @@ public class MemoryGameDAO {
 
     public void createGame(GameData game) {
         gameDataHashMap.put(game.gameID(), game);
+    }
+
+    public GameData readGame(Integer gameID) {
+        return gameDataHashMap.get(gameID);
+    }
+
+    public ArrayList<GameData> allGames() {
+        return new ArrayList<>(gameDataHashMap.values());
     }
 }

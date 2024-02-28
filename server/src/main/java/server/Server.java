@@ -2,12 +2,15 @@ package server;
 
 import dataAccess.DataAccessException;
 import request.CreateGameRequest;
+import request.JoinGameRequest;
 import request.LoginRequest;
 import request.RegisterRequest;
 import result.*;
 import spark.*;
 import com.google.gson.Gson;
 import service.*;
+
+import javax.xml.crypto.Data;
 
 public class Server {
 
@@ -95,15 +98,35 @@ public class Server {
         userService.clear();
         authService.clear();
         gameService.clear();
+        res.status(200);
         return "{}";
     }
 
     private Object listGames(Request req, Response res) throws DataAccessException {
-        return 0;
+        String authToken = req.headers("authorization");
+        try {
+            authService.verify(authToken);
+            ListGamesResponse games = gameService.listGames();
+            res.status(200);
+            return new Gson().toJson(games, ListGamesResponse.class);
+        }
+        catch(DataAccessException exception) {
+            return ErrorMethod(exception, res);
+        }
     }
 
     private Object joinGame(Request req, Response res) throws DataAccessException {
-        return 0;
+        String authToken = req.headers("authorization");
+        JoinGameRequest joinGame = new Gson().fromJson(req.body(), JoinGameRequest.class);
+        try {
+            String username = authService.getUsername(authToken);
+            gameService.joinGame(joinGame, username);
+            res.status(200);
+            return "{}";
+        }
+        catch(DataAccessException exception) {
+            return ErrorMethod(exception, res);
+        }
     }
 
     private int getStatusCode(String status) {

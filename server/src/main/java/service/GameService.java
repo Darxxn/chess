@@ -7,6 +7,7 @@ import dataAccess.DataAccessException;
 import java.util.Random;
 import chess.ChessGame;
 import model.GameData;
+import result.ListGamesResponse;
 
 public class GameService {
 
@@ -26,6 +27,10 @@ public class GameService {
         GameData gameData = new GameData(gameID,null,null, request.gameName(),game);
         gameDAO.createGame(gameData);
         return  new CreateGameResponse(gameID);
+    }
+
+    public ListGamesResponse listGames() {
+        return new ListGamesResponse(gameDAO.allGames());
     }
 
 }
