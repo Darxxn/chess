@@ -89,14 +89,6 @@ public class Server {
         }
     }
 
-    private Object clearApplication(Request req, Response res) {
-        userService.clear();
-        authService.clear();
-        gameService.clear();
-        res.status(200);
-        return "{}";
-    }
-
     private Object listGames(Request req, Response res) {
         try {
             String authToken = req.headers("authorization");
@@ -131,6 +123,14 @@ public class Server {
             case "Error: already taken" -> 403;
             default -> 500;
         };
+    }
+
+    private Object clearApplication(Request req, Response res) {
+        userService.clear();
+        authService.clear();
+        gameService.clear();
+        res.status(200);
+        return "{}";
     }
 
     private String ErrorMethod(DataAccessException exception, Response res) {

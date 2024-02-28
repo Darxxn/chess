@@ -8,6 +8,6 @@ public interface GameDataDAO {
     void createGame(GameData game);
     GameData readGame(Integer gameID);
     void deleteGame(Integer gameID);
-    ArrayList<GameData> allGames();
+    ArrayList<GameData> readAllGames();
     void deleteAllGames();
 }

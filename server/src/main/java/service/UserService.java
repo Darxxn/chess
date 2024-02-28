@@ -29,13 +29,13 @@ public class UserService {
     }
 
     public String login(LoginRequest login) throws DataAccessException {
-        String password = userDAO.readUser(login.username()).password();
-
         UserData user = userDAO.readUser(login.username());
 
         if (user == null) {
             throw new DataAccessException("Error: unauthorized");
         }
+
+        String password = userDAO.readUser(login.username()).password();
 
         if (!login.password().equals(password)) {
             throw new DataAccessException("Error: unauthorized");
