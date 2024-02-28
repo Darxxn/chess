@@ -29,4 +29,18 @@ public class UserService {
     public void clear() {
         userDAO.deleteAllGames();
     }
+
+    public String login(LoginRequest login) throws DataAccessException {
+        if (userDAO.readUser(login.username()) == null) {
+            throw new DataAccessException("Error: unauthorized");
+        }
+
+        String password = userDAO.readUser(login.username()).password();
+
+        if (!login.password().equals(password)) {
+            throw new DataAccessException("Error: unauthorized");
+        }
+
+        return userDAO.readUser(login.username()).username();
+    }
 }

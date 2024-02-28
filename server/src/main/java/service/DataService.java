@@ -1,6 +1,7 @@
 package service;
 
 import dataAccess.MemoryAuthDAO;
+import request.LoginRequest;
 import request.RegisterRequest;
 
 public class DataService {
@@ -13,4 +14,10 @@ public class DataService {
     public void clear() {
         authDAO.deleteAllAuthData();
     }
+
+    public String login(LoginRequest login) {
+        return authDAO.createAuth(login.username());
+    }
 }
+
+
