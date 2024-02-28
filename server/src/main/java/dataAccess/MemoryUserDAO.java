@@ -1,8 +1,6 @@
 package dataAccess;
 
-import service.UserService;
 import model.UserData;
-
 import java.util.HashMap;
 
 public class MemoryUserDAO {

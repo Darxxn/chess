@@ -14,6 +14,7 @@ public class DataService {
     public String add(RegisterRequest user) {
         return authDAO.createAuth(user.username());
     }
+
     public void clear() {
         authDAO.deleteAllAuthData();
     }
@@ -33,11 +34,16 @@ public class DataService {
 
     public void verify(String authToken) throws DataAccessException {
         if(authDAO.readAuth(authToken) == null){
-            throw new DataAccessException("error: unauthorized");
+            throw new DataAccessException("Error: unauthorized");
         }
     }
 
-    public
+    public String getUsername(String authToken) throws DataAccessException {
+        if (authDAO.readAuth(authToken) == null) {
+            throw new DataAccessException("Error: unauthorized");
+        }
+        return authDAO.readAuth(authToken).username();
+    }
 }
 
 

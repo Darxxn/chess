@@ -2,7 +2,6 @@ package dataAccess;
 
 import model.GameData;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -23,5 +22,9 @@ public class MemoryGameDAO {
 
     public ArrayList<GameData> allGames() {
         return new ArrayList<>(gameDataHashMap.values());
+    }
+
+    public void deleteGame(Integer gameID) {
+        gameDataHashMap.remove(gameID);
     }
 }

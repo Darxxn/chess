@@ -10,8 +10,6 @@ import spark.*;
 import com.google.gson.Gson;
 import service.*;
 
-import javax.xml.crypto.Data;
-
 public class Server {
 
     private final UserService userService = new UserService();
@@ -23,9 +21,6 @@ public class Server {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
-
-        // Register your endpoints and handle exceptions here.
-        Spark.init();
 
         Spark.post("/user", this::registerUser);
         Spark.post("/session", this::loginUser);
@@ -39,9 +34,9 @@ public class Server {
         return Spark.port();
     }
 
-    private Object registerUser(Request req, Response res) throws DataAccessException {
-        RegisterRequest user = new Gson().fromJson(req.body(), RegisterRequest.class);
+    private Object registerUser(Request req, Response res) {
         try {
+            RegisterRequest user = new Gson().fromJson(req.body(), RegisterRequest.class);
             String username = userService.add(user);
             String authToken = authService.add(user);
             RegisterResponse response = new RegisterResponse(username, authToken);
@@ -53,7 +48,7 @@ public class Server {
         }
     }
 
-    private Object loginUser(Request req, Response res) throws DataAccessException {
+    private Object loginUser(Request req, Response res) {
         try {
             LoginRequest login = new Gson().fromJson(req.body(), LoginRequest.class);
             String username = userService.login(login);
@@ -68,10 +63,10 @@ public class Server {
     }
 
 
-    private Object createGame(Request req, Response res) throws DataAccessException {
-        String authToken = req.headers("authorization");
-        CreateGameRequest newGame = new Gson().fromJson(req.body(), CreateGameRequest.class);
+    private Object createGame(Request req, Response res) {
         try {
+            String authToken = req.headers("authorization");
+            CreateGameRequest newGame = new Gson().fromJson(req.body(), CreateGameRequest.class);
             authService.verify(authToken);
             CreateGameResponse newResponse = gameService.createGame(newGame);
             res.status(200);
@@ -82,9 +77,9 @@ public class Server {
         }
     }
 
-    private Object logout(Request req, Response res) throws DataAccessException {
-        String authToken = req.headers("authorization");
+    private Object logout(Request req, Response res) {
         try {
+            String authToken = req.headers("authorization");
             authService.logout(authToken);
             res.status(200);
             return "{}";
@@ -94,7 +89,7 @@ public class Server {
         }
     }
 
-    private Object clearApplication(Request req, Response res) throws DataAccessException {
+    private Object clearApplication(Request req, Response res) {
         userService.clear();
         authService.clear();
         gameService.clear();
@@ -102,9 +97,9 @@ public class Server {
         return "{}";
     }
 
-    private Object listGames(Request req, Response res) throws DataAccessException {
-        String authToken = req.headers("authorization");
+    private Object listGames(Request req, Response res) {
         try {
+            String authToken = req.headers("authorization");
             authService.verify(authToken);
             ListGamesResponse games = gameService.listGames();
             res.status(200);
@@ -115,10 +110,10 @@ public class Server {
         }
     }
 
-    private Object joinGame(Request req, Response res) throws DataAccessException {
-        String authToken = req.headers("authorization");
-        JoinGameRequest joinGame = new Gson().fromJson(req.body(), JoinGameRequest.class);
+    private Object joinGame(Request req, Response res) {
         try {
+            String authToken = req.headers("authorization");
+            JoinGameRequest joinGame = new Gson().fromJson(req.body(), JoinGameRequest.class);
             String username = authService.getUsername(authToken);
             gameService.joinGame(joinGame, username);
             res.status(200);
@@ -129,8 +124,8 @@ public class Server {
         }
     }
 
-    private int getStatusCode(String status) {
-        return switch (status) {
+    private int getStatus(String message) {
+        return switch (message) {
             case "Error: bad request" -> 400;
             case "Error: unauthorized" -> 401;
             case "Error: already taken" -> 403;
@@ -140,7 +135,7 @@ public class Server {
 
     private String ErrorMethod(DataAccessException exception, Response res) {
         ErrorResponse errorResponse = new ErrorResponse(exception.getMessage());
-        res.status(getStatusCode(exception.getMessage()));
+        res.status(getStatus(exception.getMessage()));
         return new Gson().toJson(errorResponse, ErrorResponse.class);
     }
 

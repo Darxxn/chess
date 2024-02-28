@@ -29,7 +29,8 @@ public class UserService {
     }
 
     public String login(LoginRequest login) throws DataAccessException {
-        if (userDAO.readUser(login.username()) == null) {
+        UserData user = userDAO.readUser(login.username());
+        if (user == null) {
             throw new DataAccessException("Error: unauthorized");
         }
 
@@ -39,6 +40,6 @@ public class UserService {
             throw new DataAccessException("Error: unauthorized");
         }
 
-        return userDAO.readUser(login.username()).username();
+        return user.username();
     }
 }
