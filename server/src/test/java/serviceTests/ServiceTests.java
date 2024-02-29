@@ -2,16 +2,12 @@ package serviceTests;
 
 import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import dataAccess.DataAccessException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import service.*;
 import request.*;
 import result.*;
-
-import javax.xml.crypto.Data;
-
 
 public class ServiceTests {
     private final UserService userService = new UserService();
