@@ -120,7 +120,17 @@ public class ServiceTests {
            String authToken = authService.add(user);
            authService.verify(authToken);
            gameService.createGame(newGame);
-
+           JoinGameRequest wrongJoin = new JoinGameRequest(null, null);
+           gameService.joinGame(wrongJoin, null);
         });
+    }
+
+    @Test
+    public void positiveJoinGame() throws DataAccessException {
+        String username = userService.add(user);
+        String authToken = authService.add(user);
+        authService.verify(authToken);
+        CreateGameResponse game = gameService.createGame(newGame);
+        JoinGameRequest correctJoin = new JoinGameRequest(username, game.gameID());
     }
 }
