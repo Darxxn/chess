@@ -39,7 +39,7 @@ public class Server {
             return new Gson().toJson(response, RegisterResponse.class);
         }
         catch(DataAccessException exception) {
-            return ErrorMethod(exception, res);
+            return errorMethod(exception, res);
         }
     }
 
@@ -53,7 +53,7 @@ public class Server {
             return new Gson().toJson(response, LoginResponse.class);
         }
         catch(DataAccessException exception) {
-            return ErrorMethod(exception, res);
+            return errorMethod(exception, res);
         }
     }
 
@@ -67,7 +67,7 @@ public class Server {
             return new Gson().toJson( newResponse, CreateGameResponse.class);
         }
         catch(DataAccessException exception) {
-            return ErrorMethod(exception, res);
+            return errorMethod(exception, res);
         }
     }
 
@@ -79,7 +79,7 @@ public class Server {
             return "{}";
         }
         catch(DataAccessException exception) {
-            return ErrorMethod(exception, res);
+            return errorMethod(exception, res);
         }
     }
 
@@ -92,7 +92,7 @@ public class Server {
             return new Gson().toJson(games, ListGamesResponse.class);
         }
         catch(DataAccessException exception) {
-            return ErrorMethod(exception, res);
+            return errorMethod(exception, res);
         }
     }
 
@@ -106,7 +106,7 @@ public class Server {
             return "{}";
         }
         catch(DataAccessException exception) {
-            return ErrorMethod(exception, res);
+            return errorMethod(exception, res);
         }
     }
 
@@ -127,7 +127,7 @@ public class Server {
         return "{}";
     }
 
-    private String ErrorMethod(DataAccessException exception, Response res) {
+    private String errorMethod(DataAccessException exception, Response res) {
         ErrorResponse errorResponse = new ErrorResponse(exception.getMessage());
         res.status(getStatus(exception.getMessage()));
         return new Gson().toJson(errorResponse, ErrorResponse.class);
