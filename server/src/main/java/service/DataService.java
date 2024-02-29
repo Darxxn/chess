@@ -8,7 +8,6 @@ import request.RegisterRequest;
 import javax.xml.crypto.Data;
 
 public class DataService {
-
     private final MemoryAuthDAO authDAO = new MemoryAuthDAO();
 
     public String add(RegisterRequest user) {

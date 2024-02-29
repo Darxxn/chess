@@ -11,7 +11,6 @@ import model.GameData;
 import result.ListGamesResponse;
 
 public class GameService {
-
     private final MemoryGameDAO gameDAO = new MemoryGameDAO();
 
     public void clear() {
@@ -61,5 +60,4 @@ public class GameService {
             gameDAO.createGame(newGame);
         }
     }
-
 }

@@ -11,17 +11,13 @@ import com.google.gson.Gson;
 import service.*;
 
 public class Server {
-
     private final UserService userService = new UserService();
     private final DataService authService = new DataService();
     private final GameService gameService = new GameService();
 
     public int run(int desiredPort) {
-
         Spark.port(desiredPort);
-
         Spark.staticFiles.location("web");
-
         Spark.post("/user", this::registerUser);
         Spark.post("/session", this::loginUser);
         Spark.post("/game", this::createGame);
@@ -29,7 +25,6 @@ public class Server {
         Spark.delete("/db", this::clearApplication);
         Spark.get("/game", this::listGames);
         Spark.put("/game",this::joinGame);
-
         Spark.awaitInitialization();
         return Spark.port();
     }
@@ -61,7 +56,6 @@ public class Server {
             return ErrorMethod(exception, res);
         }
     }
-
 
     private Object createGame(Request req, Response res) {
         try {

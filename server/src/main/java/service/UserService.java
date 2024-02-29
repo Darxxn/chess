@@ -7,7 +7,6 @@ import request.LoginRequest;
 import request.RegisterRequest;
 
 public class UserService {
-
     private final MemoryUserDAO userDAO = new MemoryUserDAO();
 
     public String add(RegisterRequest user) throws DataAccessException {
@@ -18,7 +17,6 @@ public class UserService {
         if (user.username() == null || user.password() == null || user.email() == null) {
             throw new DataAccessException("Error: bad request");
         }
-
         UserData userData = new UserData(user.username(), user.password(), user.email());
         userDAO.createUser(userData);
         return user.username();
@@ -34,13 +32,10 @@ public class UserService {
         if (user == null) {
             throw new DataAccessException("Error: unauthorized");
         }
-
         String password = userDAO.readUser(login.username()).password();
-
         if (!login.password().equals(password)) {
             throw new DataAccessException("Error: unauthorized");
         }
-
         return user.username();
     }
 }
