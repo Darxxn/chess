@@ -3,7 +3,6 @@ package serviceTests;
 import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import dataAccess.DataAccessException;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import service.*;
 import request.*;
@@ -17,11 +16,6 @@ public class ServiceTests {
     RegisterRequest user = new RegisterRequest("nappy", "pass123", "email@gmail.com");
     CreateGameRequest newGame = new CreateGameRequest("new game of chess");
     LoginRequest login = new LoginRequest("nappy", "pass123");
-
-    @BeforeAll
-    public static void beforeTests() {
-        System.out.println("Stone's service tests");
-    }
 
     @Test
     public void clearAllTests() throws DataAccessException {
