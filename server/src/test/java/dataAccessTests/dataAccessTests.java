@@ -13,11 +13,13 @@ import org.junit.jupiter.api.Test;
 import dataAccess.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 public class dataAccessTests {
-    private final mySQLUser userService = new mySQLUser();
-    private final mySQLAuth authService = new mySQLAuth();
-    private final mySQLGame gameService = new mySQLGame();
+    private final mySQLUser userDAO = new mySQLUser();
+    private final mySQLAuth authDAO = new mySQLAuth();
+    private final mySQLGame gameDAO = new mySQLGame();
 
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -28,6 +30,36 @@ public class dataAccessTests {
     GameData secondGame = new GameData(2, "white", "black", "chess game", new ChessGame());
     GameData thirdGame = new GameData(3, "white", "black", "chess game", new ChessGame());
 
+    @BeforeEach
+    public void clearing() throws DataAccessException {
+        userDAO.deleteAllUsers();
+        authDAO.deleteAllAuth();
+        gameDAO.deleteAllGameData();
+    }
 
+    @Test
+    public void positiveReadUser() throws DataAccessException {
+        userDAO.createUser(user);
+        UserData readUser = userDAO.readUser(user.username());
+    }
+
+    @Test
+    public void negativeReadUser() throws DataAccessException {
+        UserData readUser = userDAO.readUser("nonexistent user");
+        assertNull(readUser);
+    }
+
+    @Test
+    public void positiveCreateUser() throws DataAccessException {
+        userDAO.createUser(user);
+    }
+
+    @Test
+    public void negativeCreateUser() {
+        DataAccessException exception = assertThrows(DataAccessException.class, () -> {
+            userDAO.createUser(user);
+            userDAO.createUser(user);
+        });
+    }
 
 }
