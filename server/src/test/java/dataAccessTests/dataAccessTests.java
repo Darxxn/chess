@@ -13,6 +13,9 @@ import org.junit.jupiter.api.Test;
 import dataAccess.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
+
+import javax.xml.crypto.Data;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -62,4 +65,27 @@ public class dataAccessTests {
         });
     }
 
+    @Test
+    public void positiveDeleteAllUsers() throws DataAccessException {
+        userDAO.createUser(user);
+        userDAO.deleteAllUsers();
+    }
+
+    @Test
+    public void negativeDeleteAllUsers() throws DataAccessException{
+        userDAO.deleteAllUsers();
+        UserData newUser = userDAO.readUser(user.username()) ;
+        assertNull(newUser);
+    }
+
+    @Test
+    public void positiveCreateAuth() throws DataAccessException {
+        authDAO.createAuth(user.username());
+    }
+
+    @Test
+    public void negativeCreateAuth() throws DataAccessException {
+        authDAO.createAuth(user.username());
+        authDAO.createAuth(user.username());
+    }
 }
