@@ -4,30 +4,19 @@ import chess.ChessGame;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import result.*;
-import request.*;
-import java.util.UUID;
-import service.*;
+import java.util.ArrayList;
 import org.junit.jupiter.api.Test;
 import dataAccess.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
-
-import javax.xml.crypto.Data;
-
 import static org.junit.jupiter.api.Assertions.*;
 
-
-public class dataAccessTests {
+public class DataAccessTests {
     private final mySQLUser userDAO = new mySQLUser();
     private final mySQLAuth authDAO = new mySQLAuth();
     private final mySQLGame gameDAO = new mySQLGame();
 
-    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-
     UserData user = new UserData("nappy", "pass1", "email@gmail.com");
-    UserData hashedPassword = new UserData("nappy", encoder.encode("pass1"), "email@gmail.com");
 
     GameData firstGame = new GameData(1, "white", "black", "chess game", new ChessGame());
     GameData secondGame = new GameData(2, "white", "black", "chess game", new ChessGame());
@@ -126,5 +115,72 @@ public class dataAccessTests {
         authDAO.deleteAllAuth();
         AuthData authData = authDAO.readAuth("wrong token");
         assertNull(authData);
+    }
+
+    @Test
+    public void positiveCreateGame() throws DataAccessException {
+        gameDAO.createGame(firstGame);
+    }
+
+    @Test
+    public void negativeCreateGame() {
+        DataAccessException exception = assertThrows(DataAccessException.class, () -> {
+            gameDAO.createGame(firstGame);
+            gameDAO.createGame(firstGame);
+        });
+    }
+
+    @Test
+    public void positiveDeleteAllGameData() throws DataAccessException {
+        gameDAO.deleteAllGameData();
+    }
+
+    @Test
+    public void negativeDeleteAllGameData() throws DataAccessException {
+        gameDAO.deleteAllGameData();
+        GameData gameData = gameDAO.readGame(45);
+        assertNull(gameData);
+    }
+
+    @Test
+    public void positiveDeleteGame() throws DataAccessException {
+        gameDAO.createGame(firstGame);
+        gameDAO.deleteGame(firstGame.gameID());
+    }
+
+    @Test
+    public void negativeDeleteGame() throws DataAccessException {
+        GameData gameData = gameDAO.readGame(43);
+        assertNull(gameData);
+    }
+
+    @Test
+    public void positiveReadGame() throws DataAccessException {
+        gameDAO.createGame(firstGame);
+        GameData gameData = gameDAO.readGame(firstGame.gameID());
+        assertEquals(firstGame, gameData);
+    }
+
+    @Test
+    public void positiveAllGames() throws DataAccessException {
+        gameDAO.createGame(firstGame);
+        gameDAO.createGame(secondGame);
+        gameDAO.createGame(thirdGame);
+        ArrayList<GameData> createdGames = gameDAO.allGames();
+
+        ArrayList<GameData> newGameList = new ArrayList<>();
+        newGameList.add(firstGame);
+        newGameList.add(secondGame);
+        newGameList.add(thirdGame);
+
+        assertEquals(createdGames, newGameList);
+    }
+
+    @Test
+    public void negativeAllGames() throws DataAccessException {
+        gameDAO.createGame(firstGame);
+        ArrayList<GameData> createdGames = gameDAO.allGames();
+        ArrayList<GameData> newGameList = new ArrayList<>();
+        assertNotEquals(createdGames, newGameList);
     }
 }

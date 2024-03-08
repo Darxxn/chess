@@ -9,8 +9,8 @@ import java.sql.SQLException;
 public class mySQLUser implements UserDataDAO {
     public void createUser(UserData user) throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
-            String insert = "INSERT INTO user (username, password, email) VALUES (?, ?, ?)";
-            try (var statement = conn.prepareStatement(insert)) {
+            String create = "INSERT INTO user (username, password, email) VALUES (?, ?, ?)";
+            try (var statement = conn.prepareStatement(create)) {
                 BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
                 String hashedPassword = encoder.encode(user.password());
                 statement.setString(1, user.username());
@@ -25,8 +25,8 @@ public class mySQLUser implements UserDataDAO {
 
     public UserData readUser(String username) throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
-            String sql = "SELECT * FROM user WHERE username = ?";
-            try (var statement = conn.prepareStatement(sql)) {
+            String read = "SELECT * FROM user WHERE username = ?";
+            try (var statement = conn.prepareStatement(read)) {
                 statement.setString(1,username);
                 ResultSet rs = statement.executeQuery();
                 if(rs.next()){
@@ -45,8 +45,8 @@ public class mySQLUser implements UserDataDAO {
 
     public void deleteAllUsers() throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
-            String sql = "DELETE FROM user";
-            try (var statement = conn.prepareStatement(sql)) {
+            String delete = "DELETE FROM user";
+            try (var statement = conn.prepareStatement(delete)) {
                 statement.executeUpdate();
             }
         } catch (SQLException e) {

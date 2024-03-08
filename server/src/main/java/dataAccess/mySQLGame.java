@@ -11,8 +11,8 @@ import java.util.ArrayList;
 public class mySQLGame implements GameDataDAO {
     public void createGame(GameData game) throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
-            String sql = "INSERT INTO game (gameID, whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?, ?)";
-            try (var statement = conn.prepareStatement(sql)) {
+            String create = "INSERT INTO game (gameID, whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?, ?)";
+            try (var statement = conn.prepareStatement(create)) {
                 String json = new Gson().toJson(game.game());
                 statement.setString(1, game.gameID().toString());
                 statement.setString(2, game.whiteUsername());
