@@ -120,11 +120,15 @@ public class Server {
     }
 
     private Object clearApplication(Request req, Response res) {
-        userService.clear();
-        authService.clear();
-        gameService.clear();
-        res.status(200);
-        return "{}";
+        try {
+            userService.clear();
+            authService.clear();
+            gameService.clear();
+            res.status(200);
+            return "{}";
+        } catch (DataAccessException exception) {
+            return errorMethod(exception, res);
+        }
     }
 
     private String errorMethod(DataAccessException exception, Response res) {
