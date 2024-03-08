@@ -1,6 +1,6 @@
 package service;
 
-import dataAccess.MemoryGameDAO;
+import dataAccess.*;
 import request.CreateGameRequest;
 import request.JoinGameRequest;
 import result.CreateGameResponse;
@@ -11,9 +11,9 @@ import model.GameData;
 import result.ListGamesResponse;
 
 public class GameService {
-    private final MemoryGameDAO gameDAO = new MemoryGameDAO();
+    private final mySQLGame gameDAO = new mySQLGame();
 
-    public void clear() {
+    public void clear() throws DataAccessException {
         gameDAO.deleteAllGameData();
     }
 
@@ -29,7 +29,7 @@ public class GameService {
         return new CreateGameResponse(gameID);
     }
 
-    public ListGamesResponse listGames() {
+    public ListGamesResponse listGames() throws DataAccessException{
         return new ListGamesResponse(gameDAO.allGames());
     }
 
