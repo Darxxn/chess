@@ -10,8 +10,8 @@ public class mySQLAuth implements AuthDataDAO {
     public String createAuth(String username) throws DataAccessException {
         UUID uuid = UUID.randomUUID();
         try (Connection conn = DatabaseManager.getConnection()) {
-            String sql = "INSERT INTO auth (username,authToken) VALUES (?, ?)";
-            try (var statement = conn.prepareStatement(sql)) {
+            String create = "INSERT INTO auth (username,authToken) VALUES (?, ?)";
+            try (var statement = conn.prepareStatement(create)) {
                 statement.setString(1, username);
                 statement.setString(2, uuid.toString());
                 statement.executeUpdate();
@@ -24,9 +24,9 @@ public class mySQLAuth implements AuthDataDAO {
 
     public void deleteAuth(String authToken) throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
-            String sql = "DELETE FROM auth WHERE authToken = ?";
-            try (var statement = conn.prepareStatement(sql)) {
-                statement.setString(1,authToken);
+            String delete = "DELETE FROM auth WHERE authToken = ?";
+            try (var statement = conn.prepareStatement(delete)) {
+                statement.setString(1, authToken);
                 statement.executeUpdate();
             }
         } catch (SQLException e) {
@@ -36,9 +36,9 @@ public class mySQLAuth implements AuthDataDAO {
 
     public AuthData readAuth(String authToken) throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
-            String sql = "SELECT * FROM auth WHERE authToken = ?";
-            try (var statement = conn.prepareStatement(sql)) {
-                statement.setString(1,authToken);
+            String read = "SELECT * FROM auth WHERE authToken = ?";
+            try (var statement = conn.prepareStatement(read)) {
+                statement.setString(1, authToken);
                 ResultSet rs = statement.executeQuery();
                 if(rs.next()){
                     return new AuthData(
@@ -55,8 +55,8 @@ public class mySQLAuth implements AuthDataDAO {
 
     public void deleteAllAuth() throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
-            String sql = "DELETE FROM auth";
-            try (var statement = conn.prepareStatement(sql)) {
+            String deleteAll = "DELETE FROM auth";
+            try (var statement = conn.prepareStatement(deleteAll)) {
                 statement.executeUpdate();
             }
         } catch (SQLException e) {
