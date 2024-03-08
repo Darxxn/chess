@@ -1,13 +1,13 @@
 package service;
 
-import dataAccess.DataAccessException;
-import dataAccess.MemoryUserDAO;
+import dataAccess.*;
 import model.UserData;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import request.LoginRequest;
 import request.RegisterRequest;
 
 public class UserService {
-    private final MemoryUserDAO userDAO = new MemoryUserDAO();
+    private final mySQLUser userDAO = new mySQLUser();
 
     public String add(RegisterRequest user) throws DataAccessException {
         if (userDAO.readUser(user.username()) != null) {
@@ -22,8 +22,8 @@ public class UserService {
         return user.username();
     }
 
-    public void clear() {
-        userDAO.deleteAllGames();
+    public void clear() throws DataAccessException {
+        userDAO.deleteAllUsers();
     }
 
     public String login(LoginRequest login) throws DataAccessException {
@@ -32,8 +32,10 @@ public class UserService {
         if (user == null) {
             throw new DataAccessException("Error: unauthorized");
         }
-        String password = userDAO.readUser(login.username()).password();
-        if (!login.password().equals(password)) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String hashedPassword = userDAO.readUser(login.username()).password();
+
+        if (!encoder.matches(login.password(), hashedPassword)) {
             throw new DataAccessException("Error: unauthorized");
         }
         return user.username();
