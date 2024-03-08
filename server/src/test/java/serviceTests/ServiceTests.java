@@ -19,6 +19,7 @@ public class ServiceTests {
 
     @Test
     public void clearAllTests() throws DataAccessException {
+        userService.clear();
         userService.add(user);
         authService.add(user);
         gameService.createGame(newGame);
@@ -38,6 +39,7 @@ public class ServiceTests {
 
     @Test
     public void positiveRegisterUserTest() throws DataAccessException {
+        userService.clear();
         userService.add(user);
         authService.add(user);
     }
@@ -54,6 +56,7 @@ public class ServiceTests {
 
     @Test
     public void positiveLoginUser() throws DataAccessException {
+        userService.clear();
         String username = userService.add(user);
         String authToken = authService.add(user);
         userService.login(login);
@@ -110,7 +113,7 @@ public class ServiceTests {
            String authToken = authService.add(user);
            authService.verify(authToken);
            gameService.createGame(newGame);
-           JoinGameRequest wrongJoin = new JoinGameRequest(null, null);
+           JoinGameRequest wrongJoin = new JoinGameRequest(null, 43);
            gameService.joinGame(wrongJoin, null);
         });
     }
