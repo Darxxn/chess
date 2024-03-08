@@ -1,24 +1,21 @@
 package service;
 
-import dataAccess.DataAccessException;
-import dataAccess.MemoryAuthDAO;
+import dataAccess.*;
 import request.LoginRequest;
 import request.RegisterRequest;
 
-import javax.xml.crypto.Data;
-
 public class DataService {
-    private final MemoryAuthDAO authDAO = new MemoryAuthDAO();
+    private final mySQLAuth authDAO = new mySQLAuth();
 
-    public String add(RegisterRequest user) {
+    public String add(RegisterRequest user) throws DataAccessException {
         return authDAO.createAuth(user.username());
     }
 
-    public void clear() {
-        authDAO.deleteAllAuthData();
+    public void clear() throws DataAccessException {
+        authDAO.deleteAllAuth();
     }
 
-    public String login(LoginRequest login) {
+    public String login(LoginRequest login) throws DataAccessException {
         return authDAO.createAuth(login.username());
     }
 
