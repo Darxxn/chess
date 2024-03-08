@@ -8,6 +8,33 @@ public class DatabaseManager {
     private static final String user;
     private static final String password;
     private static final String connectionUrl;
+    private static final String[] statements = {
+            """
+            CREATE TABLE IF NOT EXISTS  user (
+              username varchar(256) NOT NULL,
+              password varchar(256) NOT NULL,
+              email varchar(256) NOT NULL,
+              PRIMARY KEY (username)
+            )
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS  auth (
+              username varchar(256) NOT NULL,
+              authToken varchar(256) NOT NULL,
+              PRIMARY KEY (authToken)
+            )
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS  game (
+              gameID int NOT NULL,
+              whiteUsername varchar(256),
+              blackUsername varchar(256),
+              gameName varchar(256),
+              game json,
+              PRIMARY KEY (gameID)
+            )
+            """
+    };
 
     /*
      * Load the database information for the db.properties file.
@@ -65,6 +92,18 @@ public class DatabaseManager {
             return conn;
         } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
+        }
+    }
+
+    static void configureDatabase() throws Exception {
+        try (var conn = getConnection()) {
+            for (var s : statements) {
+                try (var prepStatement = conn.prepareStatement(s)) {
+                    prepStatement.executeUpdate();
+                }
+            }
+        } catch (SQLException e) {
+            throw new Exception(e.getMessage());
         }
     }
 }
