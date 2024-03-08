@@ -88,4 +88,43 @@ public class dataAccessTests {
         authDAO.createAuth(user.username());
         authDAO.createAuth(user.username());
     }
+
+    @Test
+    public void positiveReadAuth() throws DataAccessException {
+        String authToken = authDAO.createAuth(user.username());
+        AuthData authData = authDAO.readAuth(authToken);
+        assertEquals(user.username(), authData.username());
+    }
+
+    @Test
+    public void negativeReadAuth() throws DataAccessException {
+        AuthData authData = authDAO.readAuth("authToken");
+        assertNull(authData);
+    }
+
+    @Test
+    public void positiveDeleteAuth() throws DataAccessException {
+        String authToken = authDAO.createAuth(user.username());
+        authDAO.deleteAuth(authToken);
+    }
+
+    @Test
+    public void negativeDeleteAuth() throws DataAccessException {
+        String authToken = authDAO.createAuth(user.username());
+        authDAO.deleteAuth(authToken);
+        AuthData authData = authDAO.readAuth("wrong token");
+        assertNull(authData);
+    }
+
+    @Test
+    public void positiveDeleteAllAuth() throws DataAccessException {
+        authDAO.deleteAllAuth();
+    }
+
+    @Test
+    public void negativeDeleteAllAuth() throws DataAccessException {
+        authDAO.deleteAllAuth();
+        AuthData authData = authDAO.readAuth("wrong token");
+        assertNull(authData);
+    }
 }
