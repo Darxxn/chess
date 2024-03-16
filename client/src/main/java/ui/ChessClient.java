@@ -6,6 +6,7 @@ import chess.ChessGame;
 import dataAccess.*;
 
 public class ChessClient {
+
     private ChessState state = ChessState.LOGGEDOUT;
     private ChessServer server;
     private String url;
@@ -32,6 +33,7 @@ public class ChessClient {
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "quit" -> quit();
+                case "logout" -> logout();
 //                case "login" -> login();
 //                case "register" -> register();
 //                case "list" -> listGames();
@@ -52,8 +54,16 @@ public class ChessClient {
     }
 
     public String quit() {
-        return "";
+        if (this.state == ChessState.LOGGEDIN) {
+            this.logout();
+        }
+        this.state = ChessState.LOGGEDOUT;
+        this.serverLive = false;
+        return "Chess client terminated.";
     }
 
+    public String logout() {
+        return "";
+    }
 
 }
