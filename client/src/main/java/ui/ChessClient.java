@@ -10,7 +10,7 @@ public class ChessClient {
     private ChessState state = ChessState.LOGGEDOUT;
     private ChessServer server;
     private String url;
-    private boolean ServerMode;
+    private boolean serverLive = true;
 
     public ChessClient() {
         server = new ChessServer("http://localhost:8080");
