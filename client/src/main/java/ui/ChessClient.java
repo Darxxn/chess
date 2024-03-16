@@ -26,7 +26,18 @@ public class ChessClient {
     private void run() {
         Scanner scanner = new Scanner(System.in);
         System.out.println(EscapeSequences.ERASE_SCREEN);
-        System.out.println(EscapeSequences.SET_TEXT_BOLD + "Welcome to Chess!");
+        System.out.print(EscapeSequences.SET_TEXT_BOLD);
+        System.out.println("Welcome to Chess!");
+        System.out.print(EscapeSequences.SET_TEXT_FAINT);
+        System.out.println("Type Help to get started");
+
+        while (serverLive) {
+            System.out.print(EscapeSequences.SET_TEXT_BOLD);
+            System.out.println("[" + this.state + "]" + " >>>");
+            var input = scanner.nextLine();
+            var output = eval(input);
+            System.out.println(output);
+        }
     }
 
     public String eval(String input) {
