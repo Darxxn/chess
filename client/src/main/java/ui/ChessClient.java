@@ -4,7 +4,6 @@ import java.util.Arrays;
 import model.*;
 import chess.ChessGame;
 import dataAccess.*;
-import org.xml.sax.ErrorHandler;
 
 public class ChessClient {
     private ChessState state = ChessState.LOGGEDOUT;
