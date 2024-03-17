@@ -6,6 +6,8 @@ import model.*;
 import chess.ChessGame;
 import dataAccess.*;
 
+import javax.sound.midi.SysexMessage;
+
 public class ChessClient {
 
     private ChessState state = ChessState.LOGGED_OUT;
@@ -67,24 +69,20 @@ public class ChessClient {
     public String help() {
         if (state == ChessState.LOGGED_IN) {
             return (
-                    """
-                    create <NAME> - a game
-                    list - games
-                    join <ID> [WHITE][BLACK][<empty>] - game
-                    observe <ID> - a game
-                    logout - when you are done
-                    quit - playing chess
-                    help - with possible commands
-                            """
+                    EscapeSequences.SET_TEXT_COLOR_MAGENTA + "   create <NAME>" + EscapeSequences.SET_TEXT_COLOR_WHITE + "- a game" + "\n" +
+                    EscapeSequences.SET_TEXT_COLOR_MAGENTA + "   list" + EscapeSequences.SET_TEXT_COLOR_WHITE + "- games" + "\n" +
+                    EscapeSequences.SET_TEXT_COLOR_MAGENTA + "   join <ID> [WHITE][BLACK][<empty>]" + EscapeSequences.SET_TEXT_COLOR_WHITE + "- game" + "\n" +
+                    EscapeSequences.SET_TEXT_COLOR_MAGENTA + "   observe <ID>" + EscapeSequences.SET_TEXT_COLOR_WHITE + "- a game" + "\n" +
+                    EscapeSequences.SET_TEXT_COLOR_MAGENTA + "   logout" + EscapeSequences.SET_TEXT_COLOR_WHITE + "- when you are done" + "\n" +
+                    EscapeSequences.SET_TEXT_COLOR_MAGENTA + "   quit" + EscapeSequences.SET_TEXT_COLOR_WHITE + "- playing chess" + "\n" +
+                    EscapeSequences.SET_TEXT_COLOR_MAGENTA + "   help" + EscapeSequences.SET_TEXT_COLOR_WHITE + "- with possible commands" + "\n"
                     );
         } else {
             return (
-                    """
-                    register <username> <password> <email> - register a new account
-                    login <username> <password> - log into an existing account
-                    quit - playing chess
-                    help - with possible commands
-                            """
+                    EscapeSequences.SET_TEXT_COLOR_BLUE + "   register <username> <password> <email> " + EscapeSequences.SET_TEXT_COLOR_WHITE + "- register a new account" + "\n" +
+                    EscapeSequences.SET_TEXT_COLOR_BLUE + "   login <username> <password> " + EscapeSequences.SET_TEXT_COLOR_WHITE + "- log into an existing account" + "\n" +
+                    EscapeSequences.SET_TEXT_COLOR_BLUE + "   quit " + EscapeSequences.SET_TEXT_COLOR_WHITE + "- playing chess" + "\n" +
+                    EscapeSequences.SET_TEXT_COLOR_BLUE + "   help " + EscapeSequences.SET_TEXT_COLOR_WHITE + "- with possible commands" + "\n"
                     );
         }
     }
