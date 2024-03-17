@@ -29,11 +29,10 @@ public class ChessClient {
         System.out.print(EscapeSequences.SET_TEXT_BOLD);
         System.out.println("Welcome to Chess!");
         System.out.print(EscapeSequences.SET_TEXT_FAINT);
-        System.out.println("Type Help to get started");
+        System.out.println("Type " + EscapeSequences.SET_TEXT_ITALIC + "Help " + EscapeSequences.RESET_TEXT_ITALIC + "to get started");
 
         while (serverLive) {
-            System.out.print(EscapeSequences.SET_TEXT_BOLD);
-            System.out.println("[" + this.state + "]" + " >>>");
+            System.out.print("[" + this.state + "]" + " >>> ");
             var input = scanner.nextLine();
             var output = eval(input);
             System.out.println(output);
@@ -66,6 +65,7 @@ public class ChessClient {
     }
 
     public String help() {
+
         return "";
     }
 
