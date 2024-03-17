@@ -24,7 +24,7 @@ public class GameService {
         Random random = new Random();
         int gameID = Math.abs(random.nextInt());
         ChessGame game = new ChessGame();
-        GameData gameData = new GameData(gameID,null,null, request.gameName(),game);
+        GameData gameData = new GameData(gameID, null, null, request.gameName(), game);
         gameDAO.createGame(gameData);
         return new CreateGameResponse(gameID, gameData.whiteUsername(), gameData.blackUsername(), gameData.gameName(), gameData.game());
     }

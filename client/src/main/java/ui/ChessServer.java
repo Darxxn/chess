@@ -2,6 +2,7 @@ package ui;
 
 import dataAccess.DataAccessException;
 import model.*;
+import result.ListGamesResponse;
 import server.Server;
 import java.net.*;
 import java.io.*;
@@ -18,6 +19,11 @@ public class ChessServer {
         var path = "/game";
         var request = new GameData(0, null, null, gameName, null);
         return this.sendRequest("POST", path, request, GameData.class, token);
+    }
+
+    public ListGamesResponse listGames(String token) throws DataAccessException {
+        var path = "/game";
+        return this.sendRequest("GET", path, null, ListGamesResponse.class, token);
     }
 
     public AuthData registerUser(String username, String password, String email) throws DataAccessException {

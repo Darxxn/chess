@@ -1,7 +1,9 @@
 package ui;
 
 import java.awt.color.ICC_ColorSpace;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 import chess.ChessPiece;
@@ -55,7 +57,7 @@ public class ChessClient {
                 case "logout" -> logout();
                 case "login" -> params.length < 2 ? (EscapeSequences.SET_TEXT_COLOR_YELLOW + "Missing login information.\n") + EscapeSequences.SET_TEXT_COLOR_WHITE : login(params[0], params[1]);
                 case "register" -> params.length < 3 ? (EscapeSequences.SET_TEXT_COLOR_YELLOW + "Provide information to register.\n") + EscapeSequences.SET_TEXT_COLOR_WHITE : register(params[0], params[1], params[2]);
-//                case "list" -> listGames();
+                case "list" -> listGames();
                 case "create" -> params.length< 1 ? (EscapeSequences.SET_TEXT_COLOR_YELLOW + "Provide a game name\n") + EscapeSequences.SET_TEXT_COLOR_WHITE : createGame(params[0]);
 //                case "join" -> joinGame();
 //                case "observe" -> obsGame();
@@ -86,25 +88,6 @@ public class ChessClient {
                     EscapeSequences.SET_TEXT_COLOR_BLUE + "   quit " + EscapeSequences.SET_TEXT_COLOR_WHITE + "- playing chess" + "\n" +
                     EscapeSequences.SET_TEXT_COLOR_BLUE + "   help " + EscapeSequences.SET_TEXT_COLOR_WHITE + "- with possible commands" + "\n"
                     );
-        }
-    }
-
-//    public String listGames() {
-//        if (this.state == ChessState.LOGGED_OUT) {
-//            return "You must login first";
-//        }
-//    }
-
-    public String createGame(String gameName) {
-        if (this.state == ChessState.LOGGED_OUT) {
-            return "You must login to create a game\n";
-        }
-
-        try {
-            var game = server.createGame(authData.authToken(), gameName);
-            return game.gameName() + " was created!\n";
-        } catch (DataAccessException exception) {
-            return exception.getMessage();
         }
     }
 
@@ -160,6 +143,45 @@ public class ChessClient {
             this.authData = user;
             this.state = ChessState.LOGGED_IN;
             return user.username() + " was registered!\n";
+        } catch (DataAccessException exception) {
+            return exception.getMessage();
+        }
+    }
+
+    public String createGame(String gameName) {
+        if (this.state == ChessState.LOGGED_OUT) {
+            return "You must login to create a game\n";
+        }
+
+        try {
+            var game = server.createGame(authData.authToken(), gameName);
+            return game.gameName() + " was created!\n";
+        } catch (DataAccessException exception) {
+            return exception.getMessage();
+        }
+    }
+
+    public String listGames() {
+        if (this.state == ChessState.LOGGED_OUT) {
+            return "You must be logged in to view games";
+        }
+
+        try {
+            var games = server.listGames(authData.authToken());
+            List<GameData> listOfGames = new ArrayList<>(games.games());
+            StringBuilder output = new StringBuilder("Current Games:\n");
+            for (int i = 0; i < listOfGames.size(); i++) {
+                GameData game = listOfGames.get(i);
+                output.append(i + 1);
+                output.append(EscapeSequences.SET_TEXT_BOLD + EscapeSequences.SET_TEXT_COLOR_WHITE + ". gameName: ");
+                output.append(EscapeSequences.SET_TEXT_FAINT + EscapeSequences.SET_TEXT_COLOR_MAGENTA + game.gameName() + ", ");
+                output.append(EscapeSequences.SET_TEXT_BOLD + EscapeSequences.SET_TEXT_COLOR_WHITE + " whiteUsername: ");
+                output.append(EscapeSequences.SET_TEXT_FAINT + EscapeSequences.SET_TEXT_COLOR_MAGENTA + game.whiteUsername() + ", ");
+                output.append(EscapeSequences.SET_TEXT_BOLD + EscapeSequences.SET_TEXT_COLOR_WHITE + " blackUsername: ");
+                output.append(EscapeSequences.SET_TEXT_FAINT + EscapeSequences.SET_TEXT_COLOR_MAGENTA + game.blackUsername());
+                output.append(EscapeSequences.SET_TEXT_COLOR_WHITE + "\n");
+            }
+            return output.toString();
         } catch (DataAccessException exception) {
             return exception.getMessage();
         }
