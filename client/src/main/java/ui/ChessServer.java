@@ -17,7 +17,7 @@ public class ChessServer {
     public GameData createGame(String token, String gameName) throws DataAccessException {
         var path = "/game";
         var request = new GameData(0, null, null, gameName, null);
-        return this.sendRequest("CREATE", path, request, GameData.class, token);
+        return this.sendRequest("POST", path, request, GameData.class, token);
     }
 
     public AuthData registerUser(String username, String password, String email) throws DataAccessException {
@@ -45,7 +45,7 @@ public class ChessServer {
             http.setDoOutput(true);
 
             if (token != null) {
-                http.setRequestProperty("Authorization", token);
+                http.setRequestProperty("authorization", token);
             }
 
             writeBody(request, http);
@@ -71,7 +71,7 @@ public class ChessServer {
     private void notSuccessful(HttpURLConnection http) throws IOException, DataAccessException {
         var status = http.getResponseCode();
         if (!success(status)) {
-            throw new DataAccessException("Error");
+            throw new DataAccessException("Error\n");
         }
     }
 

@@ -16,6 +16,7 @@ public class ChessClient {
     private ChessState state = ChessState.LOGGED_OUT;
     private ChessServer server;
     private String url;
+    private GameData gameData;
     private boolean serverLive = true;
 
     public ChessClient() {
@@ -55,10 +56,11 @@ public class ChessClient {
                 case "login" -> params.length < 2 ? (EscapeSequences.SET_TEXT_COLOR_YELLOW + "Missing login information.\n") + EscapeSequences.SET_TEXT_COLOR_WHITE : login(params[0], params[1]);
                 case "register" -> params.length < 3 ? (EscapeSequences.SET_TEXT_COLOR_YELLOW + "Provide information to register.\n") + EscapeSequences.SET_TEXT_COLOR_WHITE : register(params[0], params[1], params[2]);
 //                case "list" -> listGames();
-                case "createGame" -> params.length< 1 ? (EscapeSequences.SET_TEXT_COLOR_YELLOW + "Provide a game name\n") + EscapeSequences.SET_TEXT_COLOR_WHITE : createGame(params[0]);
+                case "create" -> params.length< 1 ? (EscapeSequences.SET_TEXT_COLOR_YELLOW + "Provide a game name\n") + EscapeSequences.SET_TEXT_COLOR_WHITE : createGame(params[0]);
 //                case "join" -> joinGame();
 //                case "observe" -> obsGame();
-                default -> help();
+                case "help" -> help();
+                default -> "Provide a correct command\n";
             };
 //        }
 //        catch (DataAccessException ex) {
@@ -87,6 +89,12 @@ public class ChessClient {
         }
     }
 
+//    public String listGames() {
+//        if (this.state == ChessState.LOGGED_OUT) {
+//            return "You must login first";
+//        }
+//    }
+
     public String createGame(String gameName) {
         if (this.state == ChessState.LOGGED_OUT) {
             return "You must login to create a game\n";
@@ -94,7 +102,7 @@ public class ChessClient {
 
         try {
             var game = server.createGame(authData.authToken(), gameName);
-            return game.gameName() + " was created.\n";
+            return game.gameName() + " was created!\n";
         } catch (DataAccessException exception) {
             return exception.getMessage();
         }

@@ -26,7 +26,7 @@ public class GameService {
         ChessGame game = new ChessGame();
         GameData gameData = new GameData(gameID,null,null, request.gameName(),game);
         gameDAO.createGame(gameData);
-        return new CreateGameResponse(gameID);
+        return new CreateGameResponse(gameID, gameData.gameName());
     }
 
     public ListGamesResponse listGames() throws DataAccessException{
