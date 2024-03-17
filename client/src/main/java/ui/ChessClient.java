@@ -50,7 +50,7 @@ public class ChessClient {
             return switch (cmd) {
                 case "quit" -> quit();
                 case "logout" -> logout();
-//                case "login" -> login();
+                case "login" -> params.length < 2 ? "Missing information." : login(params[0], params[1]);
                 case "register" -> params.length < 3 ? "Missing information." : register(params[0], params[1], params[2]);
 //                case "list" -> listGames();
 //                case "create" -> createGame();
@@ -93,6 +93,24 @@ public class ChessClient {
         this.state = ChessState.LOGGED_OUT;
         this.serverLive = false;
         return "Chess client terminated.";
+    }
+
+    public String login(String username, String password) {
+        if (this.state == ChessState.LOGGED_IN) {
+            return "You must logout first";
+        }
+
+        try {
+            AuthData user = server.login(username, password);
+            this.authData = user;
+            this.state = ChessState.LOGGED_IN;
+            return "User " + user.username() + " logged in!";
+        } catch (DataAccessException exception) {
+            if (exception.getMessage().contains("401")) {
+                return "Invalid username or password";
+            }
+            return exception.getMessage();
+        }
     }
 
     public String logout() {

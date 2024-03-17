@@ -25,6 +25,12 @@ public class ChessServer {
         this.makeRequest("DELETE", path, null, null, token);
     }
 
+    public AuthData login(String username, String password) throws  DataAccessException {
+        var path = "/session";
+        var request = new UserData(username, password, null);
+        return this.makeRequest("POST", path, request, AuthData.class, null);
+    }
+
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String token) throws DataAccessException {
         try {
             URL url = (new URI(serverConnection + path)).toURL();
