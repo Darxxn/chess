@@ -8,7 +8,7 @@ import dataAccess.*;
 
 public class ChessClient {
 
-    private ChessState state = ChessState.LOGGEDOUT;
+    private ChessState state = ChessState.LOGGED_OUT;
     private ChessServer server;
     private String url;
     private boolean serverLive = true;
@@ -70,10 +70,10 @@ public class ChessClient {
     }
 
     public String quit() {
-        if (this.state == ChessState.LOGGEDIN) {
+        if (this.state == ChessState.LOGGED_IN) {
             this.logout();
         }
-        this.state = ChessState.LOGGEDOUT;
+        this.state = ChessState.LOGGED_OUT;
         this.serverLive = false;
         return "Chess client terminated.";
     }
@@ -83,7 +83,7 @@ public class ChessClient {
     }
 
     private void assertLoggedIn() throws DataAccessException {
-        if (state == ChessState.LOGGEDOUT) {
+        if (state == ChessState.LOGGED_OUT) {
             throw new DataAccessException("You must sign in");
         }
     }
