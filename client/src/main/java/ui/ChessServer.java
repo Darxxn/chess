@@ -14,6 +14,12 @@ public class ChessServer {
         serverConnection = url;
     }
 
+    public GameData createGame(String token, String gameName) throws DataAccessException {
+        var path = "/game";
+        var request = new GameData(0, null, null, gameName, null);
+        return this.sendRequest("CREATE", path, request, GameData.class, token);
+    }
+
     public AuthData registerUser(String username, String password, String email) throws DataAccessException {
         var path = "/user";
         var request = new UserData(username, password, email);

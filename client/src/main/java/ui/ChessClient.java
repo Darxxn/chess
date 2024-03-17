@@ -55,7 +55,7 @@ public class ChessClient {
                 case "login" -> params.length < 2 ? (EscapeSequences.SET_TEXT_COLOR_YELLOW + "Missing login information.\n") + EscapeSequences.SET_TEXT_COLOR_WHITE : login(params[0], params[1]);
                 case "register" -> params.length < 3 ? (EscapeSequences.SET_TEXT_COLOR_YELLOW + "Provide information to register.\n") + EscapeSequences.SET_TEXT_COLOR_WHITE : register(params[0], params[1], params[2]);
 //                case "list" -> listGames();
-                case "create" -> createGame();
+                case "createGame" -> params.length< 1 ? (EscapeSequences.SET_TEXT_COLOR_YELLOW + "Provide a game name\n") + EscapeSequences.SET_TEXT_COLOR_WHITE : createGame(params[0]);
 //                case "join" -> joinGame();
 //                case "observe" -> obsGame();
                 default -> help();
@@ -87,14 +87,14 @@ public class ChessClient {
         }
     }
 
-    public String createGame() {
+    public String createGame(String gameName) {
         if (this.state == ChessState.LOGGED_OUT) {
-            return "You must login to create a game";
+            return "You must login to create a game\n";
         }
 
         try {
             var game = server.createGame(authData.authToken(), gameName);
-            return game.gameName() + " was created.";
+            return game.gameName() + " was created.\n";
         } catch (DataAccessException exception) {
             return exception.getMessage();
         }
@@ -106,22 +106,22 @@ public class ChessClient {
         }
         this.state = ChessState.LOGGED_OUT;
         this.serverLive = false;
-        return "Chess client terminated.";
+        return "Chess client terminated.\n";
     }
 
     public String login(String username, String password) {
         if (this.state == ChessState.LOGGED_IN) {
-            return "You must logout first";
+            return "You must logout first\n";
         }
 
         try {
             AuthData user = server.login(username, password);
             this.authData = user;
             this.state = ChessState.LOGGED_IN;
-            return user.username() + " was logged in!";
+            return user.username() + " was logged in!\n";
         } catch (DataAccessException exception) {
             if (exception.getMessage().contains("401")) {
-                return "Invalid username or password";
+                return "Invalid username or password\n";
             }
             return exception.getMessage();
         }
@@ -129,35 +129,29 @@ public class ChessClient {
 
     public String logout() {
         if (this.state == ChessState.LOGGED_OUT) {
-            return "You must be logged in to logout";
+            return "You must be logged in to logout\n";
         }
 
         try {
             server.logout(authData.authToken());
             this.authData = null;
             this.state = ChessState.LOGGED_OUT;
-            return "Logged out successfully";
+            return "Logged out successfully\n";
         } catch (DataAccessException exception) {
             return exception.getMessage();
         }
     }
 
-    private void assertLoggedIn() throws DataAccessException {
-        if (state == ChessState.LOGGED_OUT) {
-            throw new DataAccessException("You must sign in");
-        }
-    }
-
     private String register(String username, String password, String email) {
         if (this.state == ChessState.LOGGED_IN) {
-            return "Log out to create a register user";
+            return "Log out to create a register user\n";
         }
 
         try {
             AuthData user = server.registerUser(username, password, email);
             this.authData = user;
             this.state = ChessState.LOGGED_IN;
-            return user.username() + " was registered!";
+            return user.username() + " was registered!\n";
         } catch (DataAccessException exception) {
             return exception.getMessage();
         }
