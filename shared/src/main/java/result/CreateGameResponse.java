@@ -1,4 +1,6 @@
 package result;
 
-public record CreateGameResponse(Integer gameID, String gameName) {
+import chess.ChessGame;
+
+public record CreateGameResponse(Integer gameID, String whiteUsername, String blackUsername, String gameName, ChessGame game) {
 }
