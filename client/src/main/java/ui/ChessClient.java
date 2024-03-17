@@ -1,14 +1,11 @@
 package ui;
 
-import java.awt.color.ICC_ColorSpace;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-import chess.ChessPiece;
 import model.*;
-import chess.ChessGame;
 import dataAccess.*;
 
 
@@ -48,26 +45,21 @@ public class ChessClient {
     }
 
     public String eval(String input) {
-//        try {
-            var tokens = input.toLowerCase().split(" ");
-            var cmd = (tokens.length > 0) ? tokens[0] : "help";
-            var params = Arrays.copyOfRange(tokens, 1, tokens.length);
-            return switch (cmd) {
-                case "quit" -> quit();
-                case "logout" -> logout();
-                case "login" -> params.length < 2 ? (EscapeSequences.SET_TEXT_COLOR_YELLOW + "Missing login information.\n") + EscapeSequences.SET_TEXT_COLOR_WHITE : login(params[0], params[1]);
-                case "register" -> params.length < 3 ? (EscapeSequences.SET_TEXT_COLOR_YELLOW + "Provide information to register.\n") + EscapeSequences.SET_TEXT_COLOR_WHITE : register(params[0], params[1], params[2]);
-                case "list" -> listGames();
-                case "create" -> params.length< 1 ? (EscapeSequences.SET_TEXT_COLOR_YELLOW + "Provide a game name\n") + EscapeSequences.SET_TEXT_COLOR_WHITE : createGame(params[0]);
-//                case "join" -> joinGame();
+        var tokens = input.toLowerCase().split(" ");
+        var cmd = (tokens.length > 0) ? tokens[0] : "help";
+        var params = Arrays.copyOfRange(tokens, 1, tokens.length);
+        return switch (cmd) {
+            case "quit" -> quit();
+            case "logout" -> logout();
+            case "login" -> params.length < 2 ? (EscapeSequences.SET_TEXT_COLOR_YELLOW + "Missing login information.\n") + EscapeSequences.SET_TEXT_COLOR_WHITE : login(params[0], params[1]);
+            case "register" -> params.length < 3 ? (EscapeSequences.SET_TEXT_COLOR_YELLOW + "Provide information to register.\n") + EscapeSequences.SET_TEXT_COLOR_WHITE : register(params[0], params[1], params[2]);
+            case "list" -> listGames();
+            case "create" -> params.length< 1 ? (EscapeSequences.SET_TEXT_COLOR_YELLOW + "Provide a game name\n") + EscapeSequences.SET_TEXT_COLOR_WHITE : createGame(params[0]);
+            case "join" -> params.length < 1 ? "Please provide a gameID\n" : params.length == 2 ? joinGame(Integer.parseInt(params[0]), params[1]) : joinGame(Integer.parseInt(params[0]), "");
 //                case "observe" -> obsGame();
-                case "help" -> help();
-                default -> "Provide a correct command\n";
-            };
-//        }
-//        catch (DataAccessException ex) {
-//         return ex.getMessage();
-//        }
+            case "help" -> help();
+            default -> "Provide a correct command\n";
+        };
     }
 
     public String help() {
@@ -89,6 +81,22 @@ public class ChessClient {
                     EscapeSequences.SET_TEXT_COLOR_BLUE + "   help " + EscapeSequences.SET_TEXT_COLOR_WHITE + "- with possible commands" + "\n"
                     );
         }
+    }
+
+    public String joinGame(int gameID, String color) {
+        if (this.state == ChessState.LOGGED_OUT) {
+            return "You must login to join a game\n";
+        }
+
+        // input must include white, black or no input
+        if (!color.equalsIgnoreCase("white") && !color.equalsIgnoreCase("black") && !color.equalsIgnoreCase("")) {
+            return "Choose a team: 'white', 'black', or leave blank :)\n";
+        }
+
+//        try {
+//            var
+//        }
+        return "";
     }
 
     public String quit() {
@@ -169,7 +177,12 @@ public class ChessClient {
         try {
             var games = server.listGames(authData.authToken());
             List<GameData> listOfGames = new ArrayList<>(games.games());
-            StringBuilder output = new StringBuilder("Current Games:\n");
+            StringBuilder output = new StringBuilder("List of Games:\n");
+
+            if (listOfGames.isEmpty()) {
+                output.append("No games right now :(\n");
+            }
+
             for (int i = 0; i < listOfGames.size(); i++) {
                 GameData game = listOfGames.get(i);
                 output.append(i + 1);
@@ -181,6 +194,7 @@ public class ChessClient {
                 output.append(EscapeSequences.SET_TEXT_FAINT + EscapeSequences.SET_TEXT_COLOR_MAGENTA + game.blackUsername());
                 output.append(EscapeSequences.SET_TEXT_COLOR_WHITE + "\n");
             }
+
             return output.toString();
         } catch (DataAccessException exception) {
             return exception.getMessage();
