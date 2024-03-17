@@ -44,7 +44,7 @@ public class ChessServer {
 
             writeBody(request, http);
             http.connect();
-            throwIfNotSuccessful(http);
+            notSuccessful(http);
             return readBody(http, responseClass);
 
         } catch (Exception ex) {
@@ -62,20 +62,20 @@ public class ChessServer {
         }
     }
 
-    private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, DataAccessException {
+    private void notSuccessful(HttpURLConnection http) throws IOException, DataAccessException {
         var status = http.getResponseCode();
         if (!success(status)) {
-            throw new DataAccessException("failure: ");
+            throw new DataAccessException("Error");
         }
     }
 
     private static <T> T readBody(HttpURLConnection http, Class<T> responseClass) throws IOException {
         T response = null;
         if (http.getContentLength() < 0) {
-            try (InputStream respBody = http.getInputStream()) {
-                InputStreamReader reader = new InputStreamReader(respBody);
+            try (InputStream body = http.getInputStream()) {
+                InputStreamReader input = new InputStreamReader(body);
                 if (responseClass != null) {
-                    response = new Gson().fromJson(reader, responseClass);
+                    response = new Gson().fromJson(input, responseClass);
                 }
             }
         }

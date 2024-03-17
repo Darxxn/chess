@@ -50,13 +50,12 @@ public class ChessClient {
             return switch (cmd) {
                 case "quit" -> quit();
                 case "logout" -> logout();
-                case "login" -> params.length < 2 ? "Missing information." : login(params[0], params[1]);
-                case "register" -> params.length < 3 ? "Missing information." : register(params[0], params[1], params[2]);
+                case "login" -> params.length < 2 ? (EscapeSequences.SET_TEXT_COLOR_YELLOW + "Missing login information.\n") + EscapeSequences.SET_TEXT_COLOR_WHITE : login(params[0], params[1]);
+                case "register" -> params.length < 3 ? (EscapeSequences.SET_TEXT_COLOR_YELLOW + "Provide information to register.\n") + EscapeSequences.SET_TEXT_COLOR_WHITE : register(params[0], params[1], params[2]);
 //                case "list" -> listGames();
 //                case "create" -> createGame();
 //                case "join" -> joinGame();
 //                case "observe" -> obsGame();
-//                case "help" -> help();
                 default -> help();
             };
 //        }
