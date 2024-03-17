@@ -65,8 +65,28 @@ public class ChessClient {
     }
 
     public String help() {
-
-        return "";
+        if (state == ChessState.LOGGED_IN) {
+            return (
+                    """
+                    create <NAME> - a game
+                    list - games
+                    join <ID> [WHITE][BLACK][<empty>] - game
+                    observe <ID> - a game
+                    logout - when you are done
+                    quit - playing chess
+                    help - with possible commands
+                            """
+                    );
+        } else {
+            return (
+                    """
+                    register <username> <password> <email> - register a new account
+                    login <username> <password> - log into an existing account
+                    quit - playing chess
+                    help - with possible commands
+                            """
+                    );
+        }
     }
 
     public String quit() {
