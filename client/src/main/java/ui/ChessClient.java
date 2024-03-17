@@ -3,6 +3,8 @@ package ui;
 import java.awt.color.ICC_ColorSpace;
 import java.util.Arrays;
 import java.util.Scanner;
+
+import chess.ChessPiece;
 import model.*;
 import chess.ChessGame;
 import dataAccess.*;
@@ -53,7 +55,7 @@ public class ChessClient {
                 case "login" -> params.length < 2 ? (EscapeSequences.SET_TEXT_COLOR_YELLOW + "Missing login information.\n") + EscapeSequences.SET_TEXT_COLOR_WHITE : login(params[0], params[1]);
                 case "register" -> params.length < 3 ? (EscapeSequences.SET_TEXT_COLOR_YELLOW + "Provide information to register.\n") + EscapeSequences.SET_TEXT_COLOR_WHITE : register(params[0], params[1], params[2]);
 //                case "list" -> listGames();
-//                case "create" -> createGame();
+                case "create" -> createGame();
 //                case "join" -> joinGame();
 //                case "observe" -> obsGame();
                 default -> help();
@@ -85,6 +87,19 @@ public class ChessClient {
         }
     }
 
+    public String createGame() {
+        if (this.state == ChessState.LOGGED_OUT) {
+            return "You must login to create a game";
+        }
+
+        try {
+            var game = server.createGame(authData.authToken(), gameName);
+            return game.gameName() + " was created.";
+        } catch (DataAccessException exception) {
+            return exception.getMessage();
+        }
+    }
+
     public String quit() {
         if (this.state == ChessState.LOGGED_IN) {
             this.logout();
@@ -103,7 +118,7 @@ public class ChessClient {
             AuthData user = server.login(username, password);
             this.authData = user;
             this.state = ChessState.LOGGED_IN;
-            return "User " + user.username() + " logged in!";
+            return user.username() + " was logged in!";
         } catch (DataAccessException exception) {
             if (exception.getMessage().contains("401")) {
                 return "Invalid username or password";
@@ -135,14 +150,14 @@ public class ChessClient {
 
     private String register(String username, String password, String email) {
         if (this.state == ChessState.LOGGED_IN) {
-            return "You must log out to create a register user";
+            return "Log out to create a register user";
         }
 
         try {
             AuthData user = server.registerUser(username, password, email);
             this.authData = user;
             this.state = ChessState.LOGGED_IN;
-            return "User " + user.username() + " register success!";
+            return user.username() + " was registered!";
         } catch (DataAccessException exception) {
             return exception.getMessage();
         }
