@@ -6,10 +6,10 @@ import model.*;
 import chess.ChessGame;
 import dataAccess.*;
 
-import javax.sound.midi.SysexMessage;
 
 public class ChessClient {
 
+    private AuthData authData;
     private ChessState state = ChessState.LOGGED_OUT;
     private ChessServer server;
     private String url;
@@ -49,15 +49,13 @@ public class ChessClient {
             return switch (cmd) {
                 case "quit" -> quit();
                 case "logout" -> logout();
-/*
-                case "login" -> login();
-                case "register" -> register();
-                case "list" -> listGames();
-                case "create" -> createGame();
-                case "join" -> joinGame();
-                case "observe" -> obsGame();
-*/
-                case "help" -> help();
+//                case "login" -> login();
+                case "register" -> params.length < 3 ? "Missing information." : register(params[0], params[1], params[2]);
+//                case "list" -> listGames();
+//                case "create" -> createGame();
+//                case "join" -> joinGame();
+//                case "observe" -> obsGame();
+//                case "help" -> help();
                 default -> help();
             };
 //        }
@@ -103,6 +101,21 @@ public class ChessClient {
     private void assertLoggedIn() throws DataAccessException {
         if (state == ChessState.LOGGED_OUT) {
             throw new DataAccessException("You must sign in");
+        }
+    }
+
+    private String register(String username, String password, String email) {
+        if (this.state == ChessState.LOGGED_IN) {
+            return "You must log out to create a register user";
+        }
+
+        try {
+            AuthData user = server.registerUser(username, password, email);
+            this.authData = user;
+            this.state = ChessState.LOGGED_IN;
+            return "User " + user.username() + "register success!";
+        } catch (DataAccessException exception) {
+            return exception.getMessage();
         }
     }
 }
