@@ -17,21 +17,21 @@ public class ChessServer {
     public AuthData registerUser(String username, String password, String email) throws DataAccessException {
         var path = "/user";
         var request = new UserData(username, password, email);
-        return this.makeRequest("POST", path, request, AuthData.class, null);
+        return this.sendRequest("POST", path, request, AuthData.class, null);
     }
 
     public void logout(String token) throws DataAccessException {
         var path = "/session";
-        this.makeRequest("DELETE", path, null, null, token);
+        this.sendRequest("DELETE", path, null, null, token);
     }
 
     public AuthData login(String username, String password) throws  DataAccessException {
         var path = "/session";
         var request = new UserData(username, password, null);
-        return this.makeRequest("POST", path, request, AuthData.class, null);
+        return this.sendRequest("POST", path, request, AuthData.class, null);
     }
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String token) throws DataAccessException {
+    private <T> T sendRequest(String method, String path, Object request, Class<T> responseClass, String token) throws DataAccessException {
         try {
             URL url = (new URI(serverConnection + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
