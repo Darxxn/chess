@@ -20,6 +20,11 @@ public class ChessServer {
         return this.makeRequest("POST", path, request, AuthData.class, null);
     }
 
+    public void logout(String token) throws DataAccessException {
+        var path = "/session";
+        this.makeRequest("DELETE", path, null, null, token);
+    }
+
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String token) throws DataAccessException {
         try {
             URL url = (new URI(serverConnection + path)).toURL();

@@ -1,5 +1,6 @@
 package ui;
 
+import java.awt.color.ICC_ColorSpace;
 import java.util.Arrays;
 import java.util.Scanner;
 import model.*;
@@ -95,7 +96,18 @@ public class ChessClient {
     }
 
     public String logout() {
-        return "";
+        if (this.state == ChessState.LOGGED_OUT) {
+            return "You must be logged in to logout";
+        }
+
+        try {
+            server.logout(authData.authToken());
+            this.authData = null;
+            this.state = ChessState.LOGGED_OUT;
+            return "Logged out successfully";
+        } catch (DataAccessException exception) {
+            return exception.getMessage();
+        }
     }
 
     private void assertLoggedIn() throws DataAccessException {
@@ -113,7 +125,7 @@ public class ChessClient {
             AuthData user = server.registerUser(username, password, email);
             this.authData = user;
             this.state = ChessState.LOGGED_IN;
-            return "User " + user.username() + "register success!";
+            return "User " + user.username() + " register success!";
         } catch (DataAccessException exception) {
             return exception.getMessage();
         }
