@@ -56,7 +56,7 @@ public class ChessClient {
             case "list" -> listGames();
             case "create" -> params.length< 1 ? (EscapeSequences.SET_TEXT_COLOR_YELLOW + "Provide a game name\n") + EscapeSequences.SET_TEXT_COLOR_WHITE : createGame(params[0]);
             case "join" -> params.length < 1 ? "Please provide a gameID\n" : params.length == 2 ? joinGame(Integer.parseInt(params[0]), params[1]) : joinGame(Integer.parseInt(params[0]), "");
-//                case "observe" -> obsGame();
+            case "observe" -> obsGame();
             case "help" -> help();
             default -> "Provide a correct command\n";
         };
@@ -96,16 +96,21 @@ public class ChessClient {
         try {
             var game = server.joinGame(authData.authToken(), gameID, color);
             this.gameData = game;
-            return gameBoard(color);
+            return "";
         } catch (DataAccessException exception) {
             if (exception.getMessage().contains("403")) {
                 return color + " is occupied\n";
             }
-        } catch (DataAccessException e) {
-            return e.getMessage();
+            return exception.getMessage();
+        }
+    }
+
+    public String obsGame() {
+        if (this.state == ChessState.LOGGED_OUT) {
+            return "You must login to observe a game";
         }
 
-
+        return "";
     }
 
     public String quit() {
