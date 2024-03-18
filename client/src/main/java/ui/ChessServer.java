@@ -2,11 +2,14 @@ package ui;
 
 import dataAccess.DataAccessException;
 import model.*;
+import request.JoinGameRequest;
 import result.ListGamesResponse;
 import server.Server;
 import java.net.*;
 import java.io.*;
 import com.google.gson.Gson;
+
+import javax.xml.crypto.Data;
 
 public class ChessServer {
     private final String serverConnection;
@@ -24,6 +27,12 @@ public class ChessServer {
     public ListGamesResponse listGames(String token) throws DataAccessException {
         var path = "/game";
         return this.sendRequest("GET", path, null, ListGamesResponse.class, token);
+    }
+
+    public GameData joinGame(String token, int gameID, String color) throws DataAccessException {
+        var path = "/game";
+        var request = new JoinGameRequest(color, gameID);
+        return this.sendRequest("PUT", path, request, GameData.class, token);
     }
 
     public AuthData registerUser(String username, String password, String email) throws DataAccessException {

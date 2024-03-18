@@ -93,10 +93,19 @@ public class ChessClient {
             return "Choose a team: 'white', 'black', or leave blank :)\n";
         }
 
-//        try {
-//            var
-//        }
-        return "";
+        try {
+            var game = server.joinGame(authData.authToken(), gameID, color);
+            this.gameData = game;
+            return gameBoard(color);
+        } catch (DataAccessException exception) {
+            if (exception.getMessage().contains("403")) {
+                return color + " is occupied\n";
+            }
+        } catch (DataAccessException e) {
+            return e.getMessage();
+        }
+
+
     }
 
     public String quit() {
