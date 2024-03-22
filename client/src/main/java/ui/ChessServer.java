@@ -4,12 +4,9 @@ import dataAccess.DataAccessException;
 import model.*;
 import request.JoinGameRequest;
 import result.ListGamesResponse;
-import server.Server;
 import java.net.*;
 import java.io.*;
 import com.google.gson.Gson;
-
-import javax.xml.crypto.Data;
 
 public class ChessServer {
     private final String serverConnection;
@@ -26,7 +23,8 @@ public class ChessServer {
 
     public ListGamesResponse listGames(String token) throws DataAccessException {
         var path = "/game";
-        return this.sendRequest("GET", path, null, ListGamesResponse.class, token);
+        var method = "GET";
+        return this.sendRequest(method, path, null, ListGamesResponse.class, token);
     }
 
     public GameData joinGame(String token, int gameID, String color) throws DataAccessException {

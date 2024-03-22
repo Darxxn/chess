@@ -1,9 +1,6 @@
 package ui;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 import model.*;
 import dataAccess.*;
@@ -32,7 +29,7 @@ public class ChessClient {
         Scanner scanner = new Scanner(System.in);
         System.out.println(EscapeSequences.ERASE_SCREEN);
         System.out.print(EscapeSequences.SET_TEXT_BOLD);
-        System.out.println("Welcome to Chess!");
+        System.out.println("    Welcome to Chess!");
         System.out.print(EscapeSequences.SET_TEXT_FAINT);
         System.out.println("Type " + EscapeSequences.SET_TEXT_ITALIC + "Help " + EscapeSequences.RESET_TEXT_ITALIC + "to get started");
 
@@ -55,8 +52,10 @@ public class ChessClient {
             case "register" -> params.length < 3 ? (EscapeSequences.SET_TEXT_COLOR_YELLOW + "Provide information to register.\n") + EscapeSequences.SET_TEXT_COLOR_WHITE : register(params[0], params[1], params[2]);
             case "list" -> listGames();
             case "create" -> params.length< 1 ? (EscapeSequences.SET_TEXT_COLOR_YELLOW + "Provide a game name\n") + EscapeSequences.SET_TEXT_COLOR_WHITE : createGame(params[0]);
-            case "join" -> params.length < 1 ? "Please provide a gameID\n" : params.length == 2 ? joinGame(Integer.parseInt(params[0]), params[1]) : joinGame(Integer.parseInt(params[0]), "");
-            case "observe" -> obsGame();
+            case "join" -> params.length < 1 ? "Please provide a gameID\n" : params.length == 2 ? joinGame(params[0], params[1]) : joinGame(params[0], "");
+            case "observe" -> obsGame(params[0]);
+//            case "join" -> joinGame(params);
+//            case "observe" -> obsGame(params);
             case "help" -> help();
             default -> "Provide a correct command\n";
         };
@@ -83,34 +82,49 @@ public class ChessClient {
         }
     }
 
-    public String joinGame(int gameID, String color) {
+    public String joinGame(String gameID, String color) {
+        int joinID = 0;
+
         if (this.state == ChessState.LOGGED_OUT) {
-            return "You must login to join a game\n";
+            return EscapeSequences.SET_TEXT_COLOR_RED + "You must login to join a game\n" + EscapeSequences.SET_TEXT_COLOR_WHITE;
         }
 
-        // input must include white, black or no input
         if (!color.equalsIgnoreCase("white") && !color.equalsIgnoreCase("black") && !color.equalsIgnoreCase("")) {
             return "Choose a team: 'white', 'black', or leave blank :)\n";
         }
 
         try {
-            var game = server.joinGame(authData.authToken(), gameID, color);
-            this.gameData = game;
+            joinID = Integer.parseInt(gameID);
+        } catch (NumberFormatException exception) {
+            return EscapeSequences.SET_TEXT_COLOR_RED + "Invalid game ID.\n" + EscapeSequences.SET_TEXT_COLOR_WHITE;
+        }
+
+        try {
+            this.gameData = server.joinGame(authData.authToken(), joinID, color);
+            new MakeBoard(this.gameData, this.url, this.authData, color).startGame();
             return "";
         } catch (DataAccessException exception) {
-            if (exception.getMessage().contains("403")) {
-                return color + " is occupied\n";
-            }
             return exception.getMessage();
         }
     }
 
-    public String obsGame() {
-        if (this.state == ChessState.LOGGED_OUT) {
-            return "You must login to observe a game";
+    public String obsGame(String gameId) {
+        int ID = 0;
+        if(this.state == ChessState.LOGGED_OUT){
+            return EscapeSequences.SET_TEXT_COLOR_RED + "You must be logged in to observe a game." + EscapeSequences.SET_TEXT_COLOR_WHITE;
         }
-
-        return "";
+        try{
+            ID = Integer.parseInt(gameId);
+        } catch (NumberFormatException ex) {
+            return EscapeSequences.SET_TEXT_COLOR_RED + "Invalid game ID."+ EscapeSequences.SET_TEXT_COLOR_WHITE;
+        }
+        try {
+            this.gameData = server.joinGame(authData.authToken(), ID, null);
+            new MakeBoard(this.gameData, this.url, this.authData, null).startGame();
+            return "";
+        } catch (DataAccessException exception) {
+            return exception.getMessage();
+        }
     }
 
     public String quit() {
@@ -124,7 +138,7 @@ public class ChessClient {
 
     public String login(String username, String password) {
         if (this.state == ChessState.LOGGED_IN) {
-            return "You must logout first\n";
+            return EscapeSequences.SET_TEXT_COLOR_RED + "You must logout first\n" + EscapeSequences.SET_TEXT_COLOR_WHITE;
         }
 
         try {
@@ -142,7 +156,7 @@ public class ChessClient {
 
     public String logout() {
         if (this.state == ChessState.LOGGED_OUT) {
-            return "You must be logged in to logout\n";
+            return EscapeSequences.SET_TEXT_COLOR_RED + "You must be logged in to logout\n" + EscapeSequences.SET_TEXT_COLOR_WHITE;
         }
 
         try {
@@ -157,7 +171,7 @@ public class ChessClient {
 
     private String register(String username, String password, String email) {
         if (this.state == ChessState.LOGGED_IN) {
-            return "Log out to create a register user\n";
+            return EscapeSequences.SET_TEXT_COLOR_RED + "Log out to create a register user\n" + EscapeSequences.SET_TEXT_COLOR_WHITE;
         }
 
         try {
@@ -172,7 +186,7 @@ public class ChessClient {
 
     public String createGame(String gameName) {
         if (this.state == ChessState.LOGGED_OUT) {
-            return "You must login to create a game\n";
+            return EscapeSequences.SET_TEXT_COLOR_RED +  "You must login to create a game\n" + EscapeSequences.SET_TEXT_COLOR_WHITE;
         }
 
         try {
@@ -185,12 +199,13 @@ public class ChessClient {
 
     public String listGames() {
         if (this.state == ChessState.LOGGED_OUT) {
-            return "You must be logged in to view games";
+            return EscapeSequences.SET_TEXT_COLOR_RED + "You must be logged in to view games" + EscapeSequences.SET_TEXT_COLOR_WHITE;
         }
 
         try {
             var games = server.listGames(authData.authToken());
             List<GameData> listOfGames = new ArrayList<>(games.games());
+            listOfGames.sort(Comparator.comparingInt(GameData::gameID));
             StringBuilder output = new StringBuilder("List of Games:\n");
 
             if (listOfGames.isEmpty()) {
@@ -213,5 +228,17 @@ public class ChessClient {
         } catch (DataAccessException exception) {
             return exception.getMessage();
         }
+    }
+
+    private String displayBoard() {
+        if (this.gameData == null) {
+            return EscapeSequences.SET_TEXT_COLOR_RED + "No game to display" + EscapeSequences.SET_TEXT_COLOR_WHITE;
+        }
+
+        var game = this.gameData.game();
+        var board = game.getBoard();
+        var turn = game.getTeamTurn();
+        var output = this.gameData.gameName();
+        return "";
     }
 }
