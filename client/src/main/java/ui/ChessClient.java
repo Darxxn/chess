@@ -10,13 +10,13 @@ public class ChessClient {
 
     private AuthData authData;
     private ChessState state = ChessState.LOGGED_OUT;
-    private ChessServer server;
+    private ServerFacade server;
     private String url;
     private GameData gameData;
     private boolean serverLive = true;
 
     public ChessClient() {
-        server = new ChessServer("http://localhost:8080");
+        server = new ServerFacade("http://localhost:8080");
         this.url = "http://localhost:8080";
     }
 
@@ -54,8 +54,6 @@ public class ChessClient {
             case "create" -> params.length< 1 ? (EscapeSequences.SET_TEXT_COLOR_YELLOW + "Provide a game name\n") + EscapeSequences.SET_TEXT_COLOR_WHITE : createGame(params[0]);
             case "join" -> params.length < 1 ? "Please provide a gameID\n" : params.length == 2 ? joinGame(params[0], params[1]) : joinGame(params[0], "");
             case "observe" -> obsGame(params[0]);
-//            case "join" -> joinGame(params);
-//            case "observe" -> obsGame(params);
             case "help" -> help();
             default -> "Provide a correct command\n";
         };
@@ -230,15 +228,15 @@ public class ChessClient {
         }
     }
 
-    private String displayBoard() {
-        if (this.gameData == null) {
-            return EscapeSequences.SET_TEXT_COLOR_RED + "No game to display" + EscapeSequences.SET_TEXT_COLOR_WHITE;
-        }
-
-        var game = this.gameData.game();
-        var board = game.getBoard();
-        var turn = game.getTeamTurn();
-        var output = this.gameData.gameName();
-        return "";
-    }
+//    private String displayBoard() {
+//        if (this.gameData == null) {
+//            return EscapeSequences.SET_TEXT_COLOR_RED + "No game to display" + EscapeSequences.SET_TEXT_COLOR_WHITE;
+//        }
+//
+//        var game = this.gameData.game();
+//        var board = game.getBoard();
+//        var turn = game.getTeamTurn();
+//        var output = this.gameData.gameName();
+//        return "";
+//    }
 }

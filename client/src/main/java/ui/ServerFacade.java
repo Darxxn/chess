@@ -8,10 +8,10 @@ import java.net.*;
 import java.io.*;
 import com.google.gson.Gson;
 
-public class ChessServer {
+public class ServerFacade {
     private final String serverConnection;
 
-    public ChessServer(String url) {
+    public ServerFacade(String url) {
         serverConnection = url;
     }
 
