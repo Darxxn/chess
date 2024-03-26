@@ -11,10 +11,6 @@ import dataAccess.DataAccessException;
 import model.AuthData;
 import model.GameData;
 
-
-/**
- * ChessGameREPL
- */
 public class MakeBoard implements GameHandler {
     private GameData gameData;
     private String url;
