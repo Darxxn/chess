@@ -16,10 +16,10 @@ public class ServerFacadeTests {
 
     @BeforeAll
     public static void init() {
-        var port = 8080;
+        var port = 123;
         server = new Server();
         server.run(port);
-        serverFacade = new ServerFacade("http://localhost:8080");
+        serverFacade = new ServerFacade("http://localhost:123");
         System.out.println("Started test HTTP server on " + port);
     }
 
