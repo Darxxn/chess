@@ -4,7 +4,6 @@ import java.util.*;
 
 import model.*;
 import dataAccess.*;
-import server.Server;
 
 
 public class ChessClient {
@@ -15,13 +14,10 @@ public class ChessClient {
     public String url;
     public GameData gameData;
     public boolean serverLive = true;
-    public Server server;
 
     public ChessClient() {
         serverFacade = new ServerFacade("http://localhost:8080");
         this.url = "http://localhost:8080";
-//        this.server = new Server();
-//        server.run(8080);
     }
 
     public static void main(String[] args) {
