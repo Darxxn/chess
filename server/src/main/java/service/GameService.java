@@ -42,15 +42,17 @@ public class GameService {
             int gameID = joinRequest.gameID();
             GameData previousGame = gameDAO.readGame(gameID);
 
-            if (joinRequest.playerColor().equals("WHITE") && previousGame.whiteUsername() != null) {
+            String playerColor = joinRequest.playerColor().toUpperCase();
+
+            if (playerColor.equals("WHITE") && previousGame.whiteUsername() != null) {
                 throw new DataAccessException("Error: already taken");
             }
 
-            if (joinRequest.playerColor().equals("BLACK") && previousGame.blackUsername() != null) {
+            if (playerColor.equals("BLACK") && previousGame.blackUsername() != null) {
                 throw new DataAccessException("Error: already taken");
             }
 
-            String playerColor = joinRequest.playerColor();
+
             String whiteUser = playerColor.equals("WHITE") ? username : previousGame.whiteUsername();
             String blackUser = playerColor.equals("BLACK") ? username : previousGame.blackUsername();
             String gameName = previousGame.gameName();

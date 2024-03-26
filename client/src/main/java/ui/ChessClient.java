@@ -11,17 +11,17 @@ public class ChessClient {
 
     public AuthData authData;
     public ChessState state = ChessState.LOGGED_OUT;
-    public ServerFacade server;
+    public ServerFacade serverFacade;
     public String url;
     public GameData gameData;
     public boolean serverLive = true;
-    public Server database;
+    public Server server;
 
     public ChessClient() {
-        server = new ServerFacade("http://localhost:8080");
+        serverFacade = new ServerFacade("http://localhost:8080");
         this.url = "http://localhost:8080";
-        this.database = new Server();
-        database.run(8080);
+//        this.server = new Server();
+//        server.run(8080);
     }
 
     public static void main(String[] args) {
@@ -103,7 +103,7 @@ public class ChessClient {
         }
 
         try {
-            var games = server.listGames(authData.authToken());
+            var games = serverFacade.listGames(authData.authToken());
             List<GameData> listOfGames = new ArrayList<>(games.games());
 
             if (index <= 0 || index > listOfGames.size()) {
@@ -112,7 +112,7 @@ public class ChessClient {
 
             // find the gameID based on the gameIndex
             gameID = listOfGames.get(index - 1).gameID();
-            this.gameData = server.joinGame(authData.authToken(), gameID, color);
+            this.gameData = serverFacade.joinGame(authData.authToken(), gameID, color);
             new MakeBoard(this.gameData, color).startGame();
             return "";
         } catch (DataAccessException exception) {
@@ -133,7 +133,7 @@ public class ChessClient {
             return EscapeSequences.SET_TEXT_COLOR_RED + "Invalid game ID.\n"+ EscapeSequences.SET_TEXT_COLOR_WHITE;
         }
         try {
-            var listGames = server.listGames(authData.authToken());
+            var listGames = serverFacade.listGames(authData.authToken());
             List<GameData> listOfGames = new ArrayList<>(listGames.games());
 
             if (index <= 0 || index > listOfGames.size()) {
@@ -141,7 +141,7 @@ public class ChessClient {
             }
 
             gameID = listOfGames.get(index - 1).gameID();
-            this.gameData = server.joinGame(authData.authToken(), gameID, null);
+            this.gameData = serverFacade.joinGame(authData.authToken(), gameID, null);
             new MakeBoard(this.gameData, null).startGame();
             return "";
         } catch (DataAccessException exception) {
@@ -164,7 +164,7 @@ public class ChessClient {
         }
 
         try {
-            AuthData user = server.login(username, password);
+            AuthData user = serverFacade.login(username, password);
             this.authData = user;
             this.state = ChessState.LOGGED_IN;
             return user.username() + " was logged in!\n";
@@ -182,7 +182,7 @@ public class ChessClient {
         }
 
         try {
-            server.logout(authData.authToken());
+            serverFacade.logout(authData.authToken());
             this.authData = null;
             this.state = ChessState.LOGGED_OUT;
             return "Logged out successfully\n";
@@ -197,7 +197,7 @@ public class ChessClient {
         }
 
         try {
-            AuthData user = server.registerUser(username, password, email);
+            AuthData user = serverFacade.registerUser(username, password, email);
             this.authData = user;
             this.state = ChessState.LOGGED_IN;
             return user.username() + " was registered!\n";
@@ -212,7 +212,7 @@ public class ChessClient {
         }
 
         try {
-            var game = server.createGame(authData.authToken(), gameName);
+            var game = serverFacade.createGame(authData.authToken(), gameName);
             return game.gameName() + " was created!\n";
         } catch (DataAccessException exception) {
             return exception.getMessage();
@@ -225,7 +225,7 @@ public class ChessClient {
         }
 
         try {
-            var games = server.listGames(authData.authToken());
+            var games = serverFacade.listGames(authData.authToken());
             List<GameData> listOfGames = new ArrayList<>(games.games());
             listOfGames.sort(Comparator.comparingInt(GameData::gameID));
             StringBuilder output = new StringBuilder("List of Games:\n");
