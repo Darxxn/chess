@@ -4,20 +4,24 @@ import java.util.*;
 
 import model.*;
 import dataAccess.*;
+import server.Server;
 
 
 public class ChessClient {
 
-    private AuthData authData;
-    private ChessState state = ChessState.LOGGED_OUT;
-    private ServerFacade server;
-    private String url;
-    private GameData gameData;
-    private boolean serverLive = true;
+    public AuthData authData;
+    public ChessState state = ChessState.LOGGED_OUT;
+    public ServerFacade server;
+    public String url;
+    public GameData gameData;
+    public boolean serverLive = true;
+    public Server database;
 
     public ChessClient() {
         server = new ServerFacade("http://localhost:8080");
         this.url = "http://localhost:8080";
+        this.database = new Server();
+        database.run(8080);
     }
 
     public static void main(String[] args) {
@@ -80,8 +84,9 @@ public class ChessClient {
         }
     }
 
-    public String joinGame(String gameID, String color) {
-        int joinID = 0;
+    public String joinGame(String gameIndex, String color) {
+        int gameID = 0;
+        int index = 0;
 
         if (this.state == ChessState.LOGGED_OUT) {
             return EscapeSequences.SET_TEXT_COLOR_RED + "You must login to join a game\n" + EscapeSequences.SET_TEXT_COLOR_WHITE;
@@ -92,33 +97,52 @@ public class ChessClient {
         }
 
         try {
-            joinID = Integer.parseInt(gameID);
+            index = Integer.parseInt(gameIndex);
         } catch (NumberFormatException exception) {
             return EscapeSequences.SET_TEXT_COLOR_RED + "Invalid game ID.\n" + EscapeSequences.SET_TEXT_COLOR_WHITE;
         }
 
         try {
-            this.gameData = server.joinGame(authData.authToken(), joinID, color);
-            new MakeBoard(this.gameData, this.url, this.authData, color).startGame();
+            var games = server.listGames(authData.authToken());
+            List<GameData> listOfGames = new ArrayList<>(games.games());
+
+            if (index <= 0 || index > listOfGames.size()) {
+                return EscapeSequences.SET_TEXT_COLOR_RED + "Invalid game ID.\n" + EscapeSequences.SET_TEXT_COLOR_WHITE;
+            }
+
+            // find the gameID based on the gameIndex
+            gameID = listOfGames.get(index - 1).gameID();
+            this.gameData = server.joinGame(authData.authToken(), gameID, color);
+            new MakeBoard(this.gameData, color).startGame();
             return "";
         } catch (DataAccessException exception) {
             return exception.getMessage();
         }
     }
 
-    public String obsGame(String gameId) {
-        int ID = 0;
+    public String obsGame(String gameIndex) {
+        int gameID = 0;
+        int index = 0;
+
         if(this.state == ChessState.LOGGED_OUT){
-            return EscapeSequences.SET_TEXT_COLOR_RED + "You must be logged in to observe a game." + EscapeSequences.SET_TEXT_COLOR_WHITE;
+            return EscapeSequences.SET_TEXT_COLOR_RED + "You must be logged in to observe a game.\n" + EscapeSequences.SET_TEXT_COLOR_WHITE;
         }
         try{
-            ID = Integer.parseInt(gameId);
+            index = Integer.parseInt(gameIndex);
         } catch (NumberFormatException ex) {
-            return EscapeSequences.SET_TEXT_COLOR_RED + "Invalid game ID."+ EscapeSequences.SET_TEXT_COLOR_WHITE;
+            return EscapeSequences.SET_TEXT_COLOR_RED + "Invalid game ID.\n"+ EscapeSequences.SET_TEXT_COLOR_WHITE;
         }
         try {
-            this.gameData = server.joinGame(authData.authToken(), ID, null);
-            new MakeBoard(this.gameData, this.url, this.authData, null).startGame();
+            var listGames = server.listGames(authData.authToken());
+            List<GameData> listOfGames = new ArrayList<>(listGames.games());
+
+            if (index <= 0 || index > listOfGames.size()) {
+                return EscapeSequences.SET_TEXT_COLOR_RED + "Invalid game ID.\n" + EscapeSequences.SET_TEXT_COLOR_WHITE;
+            }
+
+            gameID = listOfGames.get(index - 1).gameID();
+            this.gameData = server.joinGame(authData.authToken(), gameID, null);
+            new MakeBoard(this.gameData, null).startGame();
             return "";
         } catch (DataAccessException exception) {
             return exception.getMessage();
@@ -227,16 +251,4 @@ public class ChessClient {
             return exception.getMessage();
         }
     }
-
-//    private String displayBoard() {
-//        if (this.gameData == null) {
-//            return EscapeSequences.SET_TEXT_COLOR_RED + "No game to display" + EscapeSequences.SET_TEXT_COLOR_WHITE;
-//        }
-//
-//        var game = this.gameData.game();
-//        var board = game.getBoard();
-//        var turn = game.getTeamTurn();
-//        var output = this.gameData.gameName();
-//        return "";
-//    }
 }

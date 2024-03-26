@@ -58,7 +58,7 @@ public class ServerFacade {
             http.setDoOutput(true);
 
             if (token != null) {
-                http.setRequestProperty("authorization", token);
+                http.setRequestProperty("Authorization", token);
             }
 
             writeBody(request, http);
@@ -103,5 +103,25 @@ public class ServerFacade {
 
     private boolean success(int status) {
         return status / 100 == 2;
+    }
+
+    public void clearData() {
+        try {
+            URL url = new URL(serverConnection + "/db");
+            HttpURLConnection http = (HttpURLConnection) url.openConnection();
+            http.setRequestMethod("DELETE");
+            http.connect();
+
+            int responseCode = http.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                System.out.println("Database cleared");
+            } else {
+                System.out.println("Failed to clear data: Server returned response code " + responseCode);
+            }
+
+            http.disconnect();
+        } catch (Exception ex) {
+            System.out.println("Failed to clear data: " + ex.getMessage());
+        }
     }
 }
