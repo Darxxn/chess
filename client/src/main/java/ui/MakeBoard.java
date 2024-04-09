@@ -206,10 +206,12 @@ public class MakeBoard implements GameHandler {
     }
 
     @Override
-    public void updateGame(ChessGame game) {
+    public void updateGame(ChessGame game, String whiteUsername, String blackUsername) {
+        var playerColor = Boolean.TRUE.equals(isObserver) ? "Observer" : this.color;
         //redraw the game with the new game data
         this.gameData = new GameData(this.gameData.gameID(), this.gameData.whiteUsername(), this.gameData.blackUsername(), this.gameData.gameName(), game);
         System.out.println("\n" + displayGame(this.color) + "\n");
+        System.out.print(EscapeSequences.SET_TEXT_BOLD + playerColor + " >>>> " + EscapeSequences.RESET_TEXT_BOLD_FAINT);
     }
 
     @Override

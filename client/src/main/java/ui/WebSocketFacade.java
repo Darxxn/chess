@@ -7,6 +7,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import webSocketMessages.serverMessages.*;
+
+import com.google.gson.*;
+
 public class WebSocketFacade extends Endpoint {
     private Session session;
     private GameHandler gameHandler;
@@ -43,7 +47,30 @@ public class WebSocketFacade extends Endpoint {
     }
 
     public void returnedMessage(String message) {
+        // Convert Json into JsonObject
+        var gson = new Gson();
+        var jsonEle = gson.fromJson(message, JsonElement.class);
+        var jsonObj = jsonEle.getAsJsonObject();
 
+        var messageType = jsonObj.get("serverMessageType").getAsString();
+
+        switch (messageType) {
+            case "LOAD_GAME":
+                var loadGameMessage = gson.fromJson(jsonObj, LoadGameMessage.class);
+                game.updateGame(loadGameMessage.getGame(), loadGameMessage.getWhiteUsername(), loadGameMessage.getBlackUsername());
+                break;
+            case "NOTIFICATION":
+                var notificationMessage = gson.fromJson(jsonObj, NotificationMessage.class);
+                game.printMessage(notificationMessage.getMessage());
+                break;
+            case "ERROR":
+                var errorMessage = gson.fromJson(jsonObj, ErrorMessage.class);
+                game.printMessage(errorMessage.getErrorMessage());
+                break;
+            default:
+                System.out.println("Unknown message type: " + messageType);
+                break;
+        }
     }
 
 }
