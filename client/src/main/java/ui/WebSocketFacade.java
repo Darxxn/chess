@@ -1,6 +1,6 @@
 package ui;
 
-import exception.ResponseException;
+import dataAccess.DataAccessException;
 
 import javax.websocket.*;
 import java.io.IOException;
@@ -28,7 +28,7 @@ public class WebSocketFacade extends Endpoint {
     public void onError(){
     }
 
-    public WebSocketFacade(String url, MakeBoard game) throws ResponseException {
+    public WebSocketFacade(String url, MakeBoard game) throws DataAccessException {
         try {
             this.game = game;
             url = url.replace("http://", "ws://") + "/connect";
@@ -42,7 +42,7 @@ public class WebSocketFacade extends Endpoint {
             });
         }
         catch (DeploymentException | IOException | URISyntaxException exception) {
-            throw new ResponseException(500, "Failed to connect to the server");
+            throw new DataAccessException("Failed to connect to the server");
         }
     }
 

@@ -19,6 +19,7 @@ public class MakeBoard implements GameHandler {
     private Boolean isObserver = false;
     private boolean isRunning = true;
     private ChessBoard board;
+    private WebSocketFacade webSocketFacade;
 
     public MakeBoard(GameData gameData, String givenColor) throws DataAccessException {
         this.board = new ChessBoard();
@@ -30,6 +31,8 @@ public class MakeBoard implements GameHandler {
             this.color = "white";
             this.isObserver = true;
         }
+
+        this.webSocketFacade = new WebSocketFacade(url, this);
     }
 
     public void startGame() {
