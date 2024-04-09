@@ -38,7 +38,13 @@ public class MakeBoard implements GameHandler {
     public void startGame() {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println(EscapeSequences.SET_TEXT_BOLD + "Welcome to the chess\n" + EscapeSequences.RESET_TEXT_BOLD_FAINT + "(Type 'help' for a list of commands or 'quit' to exit the program.)");
+        if (isObserver) {
+            webSocketFacade.joinObserver(this.authData.authToken(), this.gameData.gameID(), this.authData.username());
+        } else {
+            webSocketFacade.joinPlayer(this.authData.authToken(), this.gameData.gameID(), this.authData.username(), this.convertTeamColor());
+        }
+
+        System.out.println(EscapeSequences.SET_TEXT_BOLD + "Welcome to chess\n" + EscapeSequences.RESET_TEXT_BOLD_FAINT + "(Type 'help' for a list of commands or 'quit' to exit the program.)");
         System.out.print(displayGame(this.color));
         while (isRunning) {
             var color = isObserver ? "\n" + "Observer\n\n" : "\n" + this.color + "\n\n" ;
@@ -86,6 +92,7 @@ public class MakeBoard implements GameHandler {
 
     private String leaveGame()
     {
+        webSocketFacade.leaveGame(this.authData.authToken(), this.gameData.gameID());
         isRunning = false;
         return "You have left the game.\n";
     }

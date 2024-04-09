@@ -1,5 +1,6 @@
 package ui;
 
+import chess.ChessGame;
 import dataAccess.DataAccessException;
 
 import javax.websocket.*;
@@ -10,6 +11,9 @@ import java.net.URISyntaxException;
 import webSocketMessages.serverMessages.*;
 
 import com.google.gson.*;
+import webSocketMessages.userCommands.JoinObserverCommand;
+import webSocketMessages.userCommands.JoinPlayerCommand;
+import webSocketMessages.userCommands.LeaveGameCommand;
 
 public class WebSocketFacade extends Endpoint {
     private Session session;
@@ -70,6 +74,42 @@ public class WebSocketFacade extends Endpoint {
             default:
                 System.out.println("Unknown message type: " + messageType);
                 break;
+        }
+    }
+
+    public void joinPlayer(String authToken, Integer gameID, String username, ChessGame.TeamColor playerColor) {
+        var joinPlayerCommand = new JoinPlayerCommand(authToken);
+        joinPlayerCommand.setGameID(gameID);
+        joinPlayerCommand.setUsername(username);
+        joinPlayerCommand.setPlayerColor(playerColor);
+
+        sendMessage(joinPlayerCommand);
+    }
+
+    public void joinObserver(String authToken, Integer gameID, String username) {
+        var joinObserverCommand = new JoinObserverCommand(authToken);
+        joinObserverCommand.setGameID(gameID);
+        joinObserverCommand.setUsername(username);
+
+        //Send the message
+        sendMessage(joinObserverCommand);
+    }
+
+    public void leaveGame(String authToken, Integer gameID) {
+        var leaveGameCommand = new LeaveGameCommand(authToken);
+        leaveGameCommand.setGameID(gameID);
+        sendMessage(leaveGameCommand);
+    }
+
+    private void sendMessage(Object message) {
+        if (this.session != null && this.session.isOpen()) {
+            try {
+                this.session.getBasicRemote().sendText(new Gson().toJson(message));
+            } catch (IOException exception) {
+                exception.printStackTrace();
+            }
+        } else {
+            System.out.println("Unable to send message. Session is either null or closed.");
         }
     }
 
