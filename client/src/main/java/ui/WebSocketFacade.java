@@ -1,6 +1,7 @@
 package ui;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import dataAccess.DataAccessException;
 
 import javax.websocket.*;
@@ -11,13 +12,10 @@ import java.net.URISyntaxException;
 import webSocketMessages.serverMessages.*;
 
 import com.google.gson.*;
-import webSocketMessages.userCommands.JoinObserverCommand;
-import webSocketMessages.userCommands.JoinPlayerCommand;
-import webSocketMessages.userCommands.LeaveGameCommand;
+import webSocketMessages.userCommands.*;
 
 public class WebSocketFacade extends Endpoint {
     private Session session;
-    private GameHandler gameHandler;
     private MakeBoard game;
 
     @Override
@@ -36,7 +34,7 @@ public class WebSocketFacade extends Endpoint {
         try {
             this.game = game;
             url = url.replace("http://", "ws://") + "/connect";
-            WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+            WebSocketContainer container=ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, new URI(url));
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
@@ -44,14 +42,12 @@ public class WebSocketFacade extends Endpoint {
                     returnedMessage(message);
                 }
             });
-        }
-        catch (DeploymentException | IOException | URISyntaxException exception) {
-            throw new DataAccessException("Failed to connect to the server");
+        } catch (DeploymentException | IOException | URISyntaxException e) {
+            throw new DataAccessException("Failed: 500 Failed to connect to the server");
         }
     }
 
     public void returnedMessage(String message) {
-        // Convert Json into JsonObject
         var gson = new Gson();
         var jsonEle = gson.fromJson(message, JsonElement.class);
         var jsonObj = jsonEle.getAsJsonObject();
@@ -82,7 +78,6 @@ public class WebSocketFacade extends Endpoint {
         joinPlayerCommand.setGameID(gameID);
         joinPlayerCommand.setUsername(username);
         joinPlayerCommand.setPlayerColor(playerColor);
-
         sendMessage(joinPlayerCommand);
     }
 
@@ -90,8 +85,6 @@ public class WebSocketFacade extends Endpoint {
         var joinObserverCommand = new JoinObserverCommand(authToken);
         joinObserverCommand.setGameID(gameID);
         joinObserverCommand.setUsername(username);
-
-        //Send the message
         sendMessage(joinObserverCommand);
     }
 
@@ -99,6 +92,19 @@ public class WebSocketFacade extends Endpoint {
         var leaveGameCommand = new LeaveGameCommand(authToken);
         leaveGameCommand.setGameID(gameID);
         sendMessage(leaveGameCommand);
+    }
+
+    public void makeMove(String authToken, Integer gameID, ChessMove move) {
+        var moveCommand = new MoveCommand(authToken);
+        moveCommand.setGameID(gameID);
+        moveCommand.setMove(move);
+        sendMessage(moveCommand);
+    }
+
+    public void resignGame(String authToken, Integer gameID) {
+        var resignCommand = new ResignCommand(authToken);
+        resignCommand.setGameID(gameID);
+        sendMessage(resignCommand);
     }
 
     private void sendMessage(Object message) {
