@@ -6,9 +6,6 @@ import org.junit.jupiter.api.*;
 import server.Server;
 import ui.*;
 
-import javax.xml.crypto.Data;
-
-
 public class ServerFacadeTests {
     private static ServerFacade serverFacade;
     private static Server server;
