@@ -5,7 +5,6 @@ import java.util.*;
 import model.*;
 import dataAccess.*;
 
-
 public class ChessClient {
 
     public AuthData authData;
