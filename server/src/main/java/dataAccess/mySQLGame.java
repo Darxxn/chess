@@ -2,10 +2,10 @@ package dataAccess;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import model.AuthData;
 import model.GameData;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+
+import java.sql.*;
 import java.util.ArrayList;
 
 public class mySQLGame implements GameDataDAO {
@@ -14,7 +14,7 @@ public class mySQLGame implements GameDataDAO {
             String create = "INSERT INTO game (gameID, whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?, ?)";
             try (var statement = conn.prepareStatement(create)) {
                 String json = new Gson().toJson(game.game());
-                statement.setString(1, game.gameID().toString());
+                statement.setInt(1, game.gameID());
                 statement.setString(2, game.whiteUsername());
                 statement.setString(3, game.blackUsername());
                 statement.setString(4, game.gameName());
