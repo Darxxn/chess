@@ -18,13 +18,14 @@ public class ChessGame {
     public ChessGame() {
         chessBoard = new ChessBoard();
         chessBoard.resetBoard();
+        currentTurn = TeamColor.WHITE;
     }
 
     /**
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        return currentTurn;
+        return this.currentTurn;
     }
 
     /**
@@ -33,7 +34,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        currentTurn = team;
+        this.currentTurn = team;
     }
 
     /**
