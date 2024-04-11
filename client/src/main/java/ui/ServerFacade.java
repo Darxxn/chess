@@ -83,8 +83,9 @@ public class ServerFacade {
 
     private void notSuccessful(HttpURLConnection http) throws IOException, DataAccessException {
         var status = http.getResponseCode();
+        var message = http.getResponseMessage();
         if (!success(status)) {
-            throw new DataAccessException("Error\n");
+            throw new DataAccessException("Error: " + status + " - " + message  + "\n");
         }
     }
 

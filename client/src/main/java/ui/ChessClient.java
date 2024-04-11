@@ -6,7 +6,6 @@ import model.*;
 import dataAccess.*;
 
 public class ChessClient {
-
     public AuthData authData;
     public ChessState state = ChessState.LOGGED_OUT;
     public ServerFacade serverFacade;
@@ -54,7 +53,7 @@ public class ChessClient {
             case "join" -> params.length < 1 ? "Please provide a gameID\n" : params.length == 2 ? joinGame(params[0], params[1]) : joinGame(params[0], "");
             case "observe" -> obsGame(params[0]);
             case "help" -> help();
-            default -> "Provide a correct command\n";
+            default -> "Type help to show commands\n";
         };
     }
 
@@ -107,8 +106,9 @@ public class ChessClient {
 
             // find the gameID based on the gameIndex
             gameID = listOfGames.get(index - 1).gameID();
-            this.gameData = serverFacade.joinGame(authData.authToken(), gameID, color);
-            new MakeBoard(this.gameData, color).startGame();
+            serverFacade.joinGame(authData.authToken(), gameID, color);
+            this.gameData = listOfGames.get(index - 1);
+            new MakeBoard(gameData, color, this.url, this.authData).startGame();
             return "";
         } catch (DataAccessException exception) {
             return exception.getMessage();
@@ -136,8 +136,9 @@ public class ChessClient {
             }
 
             gameID = listOfGames.get(index - 1).gameID();
-            this.gameData = serverFacade.joinGame(authData.authToken(), gameID, null);
-            new MakeBoard(this.gameData, null).startGame();
+            serverFacade.joinGame(authData.authToken(), gameID, null);
+            this.gameData = listOfGames.get(index - 1);
+            new MakeBoard(this.gameData, null, this.url, this.authData).startGame();
             return "";
         } catch (DataAccessException exception) {
             return exception.getMessage();

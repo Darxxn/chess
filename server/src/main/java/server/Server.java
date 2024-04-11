@@ -6,6 +6,7 @@ import request.JoinGameRequest;
 import request.LoginRequest;
 import request.RegisterRequest;
 import result.*;
+import server.websocket.WebSocketHandler;
 import spark.*;
 import com.google.gson.Gson;
 import service.*;
@@ -14,10 +15,12 @@ public class Server {
     private final UserService userService = new UserService();
     private final DataService authService = new DataService();
     private final GameService gameService = new GameService();
+    private final WebSocketHandler webSocketHandler = new WebSocketHandler();
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
         Spark.staticFiles.location("web");
+        Spark.webSocket("/connect", webSocketHandler);
         Spark.post("/user", this::registerUser);
         Spark.post("/session", this::loginUser);
         Spark.post("/game", this::createGame);
