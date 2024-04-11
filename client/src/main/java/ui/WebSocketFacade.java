@@ -2,7 +2,8 @@ package ui;
 
 import chess.ChessGame;
 import chess.ChessMove;
-import dataAccess.DataAccessException;
+//import dataAccess.DataAccessException;
+import exception.DataAccessException;
 
 import javax.websocket.*;
 import java.io.IOException;

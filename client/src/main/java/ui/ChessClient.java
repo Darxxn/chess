@@ -3,7 +3,7 @@ package ui;
 import java.util.*;
 
 import model.*;
-import dataAccess.*;
+import exception.DataAccessException;
 
 public class ChessClient {
     public AuthData authData;
@@ -23,12 +23,12 @@ public class ChessClient {
         this.url = url;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws DataAccessException {
         var newClient = new ChessClient();
         newClient.run();
     }
 
-    private void run() {
+    private void run() throws DataAccessException {
         Scanner scanner = new Scanner(System.in);
         System.out.println(EscapeSequences.ERASE_SCREEN);
         System.out.print(EscapeSequences.SET_TEXT_BOLD);
@@ -44,7 +44,7 @@ public class ChessClient {
         }
     }
 
-    public String eval(String input) {
+    public String eval(String input) throws DataAccessException {
         var tokens = input.toLowerCase().split(" ");
         var cmd = (tokens.length > 0) ? tokens[0] : "help";
         var params = Arrays.copyOfRange(tokens, 1, tokens.length);
@@ -150,7 +150,7 @@ public class ChessClient {
         }
     }
 
-    public String quit() {
+    public String quit() throws DataAccessException {
         if (this.state == ChessState.LOGGED_IN) {
             this.logout();
         }
@@ -159,97 +159,74 @@ public class ChessClient {
         return "Chess client terminated.\n";
     }
 
-    public String login(String username, String password) {
+    public String login(String username, String password) throws DataAccessException {
         if (this.state == ChessState.LOGGED_IN) {
             return EscapeSequences.SET_TEXT_COLOR_RED + "You must logout first\n" + EscapeSequences.SET_TEXT_COLOR_WHITE;
         }
 
-        try {
-            AuthData user = serverFacade.login(username, password);
-            this.authData = user;
-            this.state = ChessState.LOGGED_IN;
-            return user.username() + " was logged in!\n";
-        } catch (DataAccessException exception) {
-            if (exception.getMessage().contains("401")) {
-                return "Invalid username or password\n";
-            }
-            return exception.getMessage();
-        }
+        AuthData user = serverFacade.login(username, password);
+        this.authData = user;
+        this.state = ChessState.LOGGED_IN;
+        return user.username() + " was logged in!\n";
     }
 
-    public String logout() {
+    public String logout() throws DataAccessException {
         if (this.state == ChessState.LOGGED_OUT) {
             return EscapeSequences.SET_TEXT_COLOR_RED + "You must be logged in to logout\n" + EscapeSequences.SET_TEXT_COLOR_WHITE;
         }
 
-        try {
-            serverFacade.logout(authData.authToken());
-            this.authData = null;
-            this.state = ChessState.LOGGED_OUT;
-            return "Logged out successfully\n";
-        } catch (DataAccessException exception) {
-            return exception.getMessage();
-        }
+        serverFacade.logout(authData.authToken());
+        this.authData = null;
+        this.state = ChessState.LOGGED_OUT;
+        return "Logged out successfully\n";
     }
 
-    private String register(String username, String password, String email) {
+    private String register(String username, String password, String email) throws DataAccessException {
         if (this.state == ChessState.LOGGED_IN) {
             return EscapeSequences.SET_TEXT_COLOR_RED + "Log out to create a register user\n" + EscapeSequences.SET_TEXT_COLOR_WHITE;
         }
 
-        try {
-            AuthData user = serverFacade.registerUser(username, password, email);
-            this.authData = user;
-            this.state = ChessState.LOGGED_IN;
-            return user.username() + " was registered!\n";
-        } catch (DataAccessException exception) {
-            return exception.getMessage();
-        }
+        AuthData user = serverFacade.registerUser(username, password, email);
+        this.authData = user;
+        this.state = ChessState.LOGGED_IN;
+        return user.username() + " was registered!\n";
     }
 
-    public String createGame(String gameName) {
+    public String createGame(String gameName) throws DataAccessException {
         if (this.state == ChessState.LOGGED_OUT) {
             return EscapeSequences.SET_TEXT_COLOR_RED +  "You must login to create a game\n" + EscapeSequences.SET_TEXT_COLOR_WHITE;
         }
 
-        try {
-            var game = serverFacade.createGame(authData.authToken(), gameName);
-            return game.gameName() + " was created!\n";
-        } catch (DataAccessException exception) {
-            return exception.getMessage();
-        }
+        var game = serverFacade.createGame(authData.authToken(), gameName);
+        return game.gameName() + " was created!\n";
     }
 
-    public String listGames() {
+    public String listGames() throws DataAccessException {
         if (this.state == ChessState.LOGGED_OUT) {
             return EscapeSequences.SET_TEXT_COLOR_RED + "You must be logged in to view games" + EscapeSequences.SET_TEXT_COLOR_WHITE;
         }
 
-        try {
-            var games = serverFacade.listGames(authData.authToken());
-            List<GameData> listOfGames = new ArrayList<>(games.games());
-            listOfGames.sort(Comparator.comparingInt(GameData::gameID));
-            StringBuilder output = new StringBuilder("List of Games:\n");
+        var games = serverFacade.listGames(authData.authToken());
+        List<GameData> listOfGames = new ArrayList<>(games.games());
+        listOfGames.sort(Comparator.comparingInt(GameData::gameID));
+        StringBuilder output = new StringBuilder("List of Games:\n");
 
-            if (listOfGames.isEmpty()) {
-                output.append("No games right now :(\n");
-            }
-
-            for (int i = 0; i < listOfGames.size(); i++) {
-                GameData game = listOfGames.get(i);
-                output.append(i + 1);
-                output.append(EscapeSequences.SET_TEXT_BOLD + EscapeSequences.SET_TEXT_COLOR_WHITE + ". gameName: ");
-                output.append(EscapeSequences.SET_TEXT_FAINT + EscapeSequences.SET_TEXT_COLOR_MAGENTA + game.gameName() + ", ");
-                output.append(EscapeSequences.SET_TEXT_BOLD + EscapeSequences.SET_TEXT_COLOR_WHITE + " whiteUsername: ");
-                output.append(EscapeSequences.SET_TEXT_FAINT + EscapeSequences.SET_TEXT_COLOR_MAGENTA + game.whiteUsername() + ", ");
-                output.append(EscapeSequences.SET_TEXT_BOLD + EscapeSequences.SET_TEXT_COLOR_WHITE + " blackUsername: ");
-                output.append(EscapeSequences.SET_TEXT_FAINT + EscapeSequences.SET_TEXT_COLOR_MAGENTA + game.blackUsername());
-                output.append(EscapeSequences.SET_TEXT_COLOR_WHITE + "\n");
-            }
-
-            return output.toString();
-        } catch (DataAccessException exception) {
-            return exception.getMessage();
+        if (listOfGames.isEmpty()) {
+            output.append("No games right now :(\n");
         }
+
+        for (int i = 0; i < listOfGames.size(); i++) {
+            GameData game = listOfGames.get(i);
+            output.append(i + 1);
+            output.append(EscapeSequences.SET_TEXT_BOLD + EscapeSequences.SET_TEXT_COLOR_WHITE + ". gameName: ");
+            output.append(EscapeSequences.SET_TEXT_FAINT + EscapeSequences.SET_TEXT_COLOR_MAGENTA + game.gameName() + ", ");
+            output.append(EscapeSequences.SET_TEXT_BOLD + EscapeSequences.SET_TEXT_COLOR_WHITE + " whiteUsername: ");
+            output.append(EscapeSequences.SET_TEXT_FAINT + EscapeSequences.SET_TEXT_COLOR_MAGENTA + game.whiteUsername() + ", ");
+            output.append(EscapeSequences.SET_TEXT_BOLD + EscapeSequences.SET_TEXT_COLOR_WHITE + " blackUsername: ");
+            output.append(EscapeSequences.SET_TEXT_FAINT + EscapeSequences.SET_TEXT_COLOR_MAGENTA + game.blackUsername());
+            output.append(EscapeSequences.SET_TEXT_COLOR_WHITE + "\n");
+        }
+
+        return output.toString();
     }
 }

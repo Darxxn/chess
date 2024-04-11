@@ -4,7 +4,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import chess.*;
-import dataAccess.DataAccessException;
+//import dataAccess.DataAccessException;
+import exception.DataAccessException;
 import model.AuthData;
 import model.GameData;
 
@@ -28,7 +29,6 @@ public class MakeBoard implements GameHandler {
             this.color = givenColor;
             this.isObserver = false;
         } else {
-            this.color = "white";
             this.isObserver = true;
         }
         this.webSocketFacade = new WebSocketFacade(url, this);
@@ -130,7 +130,7 @@ public class MakeBoard implements GameHandler {
         }
         var chessMove = new chess.ChessMove(fromMove, toMove, promotion);
         webSocketFacade.makeMove(this.authData.authToken(), this.gameData.gameID(), chessMove);
-        return "You have made a move," + from + " " + to + "." + "\n";
+        return "You have made a move, " + from + " " + to + "." + "\n";
     }
 
     private String resign(){
@@ -175,15 +175,7 @@ public class MakeBoard implements GameHandler {
 
         var output = "\nGame:\n";
 
-        if (color.equalsIgnoreCase("white")) {
-            output += displayBoard();
-            output += "\n--------------------------------\n";
-            output += displayBoardInverted();
-        } else {
-            output += displayBoardInverted();
-            output += "\n--------------------------------\n";
-            output += displayBoard();
-        }
+        output += displayBoard();
         return output + "\n" + "It is " + turn + "'s turn.\n";
     }
 
@@ -192,10 +184,10 @@ public class MakeBoard implements GameHandler {
         var board = gameInfo.getBoard();
         var output = "";
 
-        output += EscapeSequences.SET_TEXT_BOLD + displayAlphabet(false) + EscapeSequences.RESET_TEXT_BOLD_FAINT + "\n";
-        for (int i = 0; i < 8; i++) {
-            output += EscapeSequences.SET_TEXT_BOLD + (8 - i) + EscapeSequences.RESET_TEXT_BOLD_FAINT + " ";
-            for (int j = 0; j < 8; j++) {
+        output += EscapeSequences.SET_TEXT_BOLD + displayAlphabet() + EscapeSequences.RESET_TEXT_BOLD_FAINT + "\n";
+        for (int i = 7; i >= 0; i--) {
+            output += EscapeSequences.SET_TEXT_BOLD + (i + 1) + EscapeSequences.RESET_TEXT_BOLD_FAINT + " ";
+            for (int j = 7; j >= 0; j--) {
                 var piece = board.getPiece(new ChessPosition(i + 1, j + 1));
                 if (highlightPosition != null && highlightPosition.getRow() == i && highlightPosition.getColumn() == j) {
                     output += EscapeSequences.SET_BG_COLOR_YELLOW + returnPieceChar(piece) + EscapeSequences.SET_BG_COLOR_DARK_GREY;
@@ -205,27 +197,9 @@ public class MakeBoard implements GameHandler {
                     output += (i + j) % 2 == 0 ? EscapeSequences.SET_BG_COLOR_DARK_GREY + returnPieceChar(piece) : EscapeSequences.SET_BG_COLOR_BLUE + returnPieceChar(piece);
                 }
             }
-            output += EscapeSequences.SET_BG_COLOR_DARK_GREY + EscapeSequences.SET_TEXT_BOLD + (8 - i) + EscapeSequences.RESET_TEXT_BOLD_FAINT + "\n";
-        }
-        output += EscapeSequences.SET_TEXT_BOLD + displayAlphabet(false) + EscapeSequences.RESET_TEXT_BOLD_FAINT + EscapeSequences.SET_BG_COLOR_DARK_GREY;
-        return output;
-    }
-
-    private String displayBoardInverted(){
-        var gameInfo = this.gameData.game();
-        var board = gameInfo.getBoard();
-        var output = "";
-
-        output += EscapeSequences.SET_TEXT_BOLD + displayAlphabet(true) + EscapeSequences.RESET_TEXT_BOLD_FAINT + "\n";
-        for (int i = 7; i >= 0; i--) {
-            output += EscapeSequences.SET_TEXT_BOLD + (8 - i) + EscapeSequences.RESET_TEXT_BOLD_FAINT + " ";
-            for (int j = 7; j >= 0; j--) {
-                var piece = board.getPiece(new ChessPosition(i + 1, j + 1));
-                output += (i + j) % 2 == 0 ? EscapeSequences.SET_BG_COLOR_DARK_GREY + returnPieceChar(piece) : EscapeSequences.SET_BG_COLOR_LIGHT_GREY + returnPieceChar(piece);
-            }
             output += EscapeSequences.SET_BG_COLOR_DARK_GREY + EscapeSequences.SET_TEXT_BOLD + (i + 1) + EscapeSequences.RESET_TEXT_BOLD_FAINT + "\n";
         }
-        output += EscapeSequences.SET_TEXT_BOLD + displayAlphabet(true) + EscapeSequences.RESET_TEXT_BOLD_FAINT + EscapeSequences.SET_BG_COLOR_DARK_GREY;
+        output += EscapeSequences.SET_TEXT_BOLD + displayAlphabet() + EscapeSequences.RESET_TEXT_BOLD_FAINT + EscapeSequences.SET_BG_COLOR_DARK_GREY;
         return output;
     }
 
@@ -233,47 +207,44 @@ public class MakeBoard implements GameHandler {
         if (piece == null) {
             return EscapeSequences.EMPTY;
         }
-        if (piece.getTeamColor().toString() == "WHITE") {
-            switch (piece.getPieceType()) {
-                case PAWN:
-                    return EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.WHITE_PAWN + EscapeSequences.SET_TEXT_COLOR_WHITE;
-                case ROOK:
-                    return EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.WHITE_ROOK + EscapeSequences.SET_TEXT_COLOR_WHITE;
-                case KNIGHT:
-                    return EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.WHITE_KNIGHT + EscapeSequences.SET_TEXT_COLOR_WHITE;
-                case BISHOP:
-                    return EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.WHITE_BISHOP + EscapeSequences.SET_TEXT_COLOR_WHITE;
-                case QUEEN:
-                    return EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.WHITE_QUEEN + EscapeSequences.SET_TEXT_COLOR_WHITE;
-                case KING:
-                    return EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.WHITE_KING + EscapeSequences.SET_TEXT_COLOR_WHITE;
-                default:
-                    return EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.EMPTY + EscapeSequences.SET_TEXT_COLOR_WHITE;
-            }
+        if (Objects.equals(piece.getTeamColor().toString(), "WHITE")) {
+            return switch (piece.getPieceType()) {
+                case PAWN ->
+                        EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.WHITE_PAWN + EscapeSequences.SET_TEXT_COLOR_WHITE;
+                case ROOK ->
+                        EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.WHITE_ROOK + EscapeSequences.SET_TEXT_COLOR_WHITE;
+                case KNIGHT ->
+                        EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.WHITE_KNIGHT + EscapeSequences.SET_TEXT_COLOR_WHITE;
+                case BISHOP ->
+                        EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.WHITE_BISHOP + EscapeSequences.SET_TEXT_COLOR_WHITE;
+                case QUEEN ->
+                        EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.WHITE_QUEEN + EscapeSequences.SET_TEXT_COLOR_WHITE;
+                case KING ->
+                        EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.WHITE_KING + EscapeSequences.SET_TEXT_COLOR_WHITE;
+                default ->
+                        EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.EMPTY + EscapeSequences.SET_TEXT_COLOR_WHITE;
+            };
         } else {
-            switch (piece.getPieceType()) {
-                case PAWN:
-                    return EscapeSequences.SET_TEXT_COLOR_BLACK + EscapeSequences.BLACK_PAWN  + EscapeSequences.SET_TEXT_COLOR_WHITE;
-                case ROOK:
-                    return EscapeSequences.SET_TEXT_COLOR_BLACK + EscapeSequences.BLACK_ROOK + EscapeSequences.SET_TEXT_COLOR_WHITE;
-                case KNIGHT:
-                    return EscapeSequences.SET_TEXT_COLOR_BLACK + EscapeSequences.BLACK_KNIGHT + EscapeSequences.SET_TEXT_COLOR_WHITE;
-                case BISHOP:
-                    return EscapeSequences.SET_TEXT_COLOR_BLACK + EscapeSequences.BLACK_BISHOP + EscapeSequences.SET_TEXT_COLOR_WHITE;
-                case QUEEN:
-                    return EscapeSequences.SET_TEXT_COLOR_BLACK + EscapeSequences.BLACK_QUEEN + EscapeSequences.SET_TEXT_COLOR_WHITE;
-                case KING:
-                    return EscapeSequences.SET_TEXT_COLOR_BLACK + EscapeSequences.BLACK_KING + EscapeSequences.SET_TEXT_COLOR_WHITE;
-                default:
-                    return EscapeSequences.SET_TEXT_COLOR_BLACK + EscapeSequences.EMPTY + EscapeSequences.SET_TEXT_COLOR_WHITE;
-            }
+            return switch (piece.getPieceType()) {
+                case PAWN ->
+                        EscapeSequences.SET_TEXT_COLOR_BLACK + EscapeSequences.BLACK_PAWN + EscapeSequences.SET_TEXT_COLOR_WHITE;
+                case ROOK ->
+                        EscapeSequences.SET_TEXT_COLOR_BLACK + EscapeSequences.BLACK_ROOK + EscapeSequences.SET_TEXT_COLOR_WHITE;
+                case KNIGHT ->
+                        EscapeSequences.SET_TEXT_COLOR_BLACK + EscapeSequences.BLACK_KNIGHT + EscapeSequences.SET_TEXT_COLOR_WHITE;
+                case BISHOP ->
+                        EscapeSequences.SET_TEXT_COLOR_BLACK + EscapeSequences.BLACK_BISHOP + EscapeSequences.SET_TEXT_COLOR_WHITE;
+                case QUEEN ->
+                        EscapeSequences.SET_TEXT_COLOR_BLACK + EscapeSequences.BLACK_QUEEN + EscapeSequences.SET_TEXT_COLOR_WHITE;
+                case KING ->
+                        EscapeSequences.SET_TEXT_COLOR_BLACK + EscapeSequences.BLACK_KING + EscapeSequences.SET_TEXT_COLOR_WHITE;
+                default ->
+                        EscapeSequences.SET_TEXT_COLOR_BLACK + EscapeSequences.EMPTY + EscapeSequences.SET_TEXT_COLOR_WHITE;
+            };
         }
     }
 
-    private String displayAlphabet(Boolean inverted){
-        if (inverted) {
-            return "  \u2003h\u2003 g\u2003 f\u2003 e\u2003 d\u2003 c\u2003 b\u2003 a";
-        }
+    private String displayAlphabet(){
         return "  \u2003a\u2003 b\u2003 c\u2003 d\u2003 e\u2003 f\u2003 g\u2003 h";
     }
 
@@ -289,13 +260,11 @@ public class MakeBoard implements GameHandler {
         }
     }
 
-    private ChessPosition convertToLegalPosition(String input){
-        if (!input.matches("[a-h][1-8]")) {
-            return null;
-        }
-        var fromRow = 9 - (input.charAt(1) - '0');
-        var fromCol = (input.charAt(0) - 'a') + 1;
-        return new ChessPosition(fromRow, fromCol);
+    private ChessPosition convertToLegalPosition(String input) {
+        char columnChar = input.charAt(0);
+        int row = Character.getNumericValue(input.charAt(1));
+        int column = 8 - (columnChar - 'a');
+        return new ChessPosition(row, column);
     }
 
     private String highlightLegalMoves(String position){
