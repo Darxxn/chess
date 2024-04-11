@@ -18,6 +18,11 @@ public class ChessClient {
         this.url = "http://localhost:8080";
     }
 
+    public ChessClient(String url) {
+        serverFacade = new ServerFacade(url);
+        this.url = url;
+    }
+
     public static void main(String[] args) {
         var newClient = new ChessClient();
         newClient.run();

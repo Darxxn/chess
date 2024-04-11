@@ -1,7 +1,5 @@
 package webSocketMessages.userCommands;
 
-import chess.ChessGame;
-
 public class JoinObserverCommand extends UserGameCommand{
 
     private Integer gameID;

@@ -49,7 +49,7 @@ public class WebSocketAccess implements WebSocketDAO {
 
     public String leaveGame(int gameID, String authToken) throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
-            String sql = "DELETE FROM game WHERE gameID = ? AND username = ?";
+            String sql = "DELETE FROM game WHERE gameID = ? AND blackUsername = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
             var username = getAuth(authToken).username();
             stmt.setInt(1, gameID);
@@ -143,7 +143,7 @@ public class WebSocketAccess implements WebSocketDAO {
             stmt.setString(1, authToken);
             ResultSet resultSet = stmt.executeQuery();
             if (resultSet.next()) {
-                return new AuthData(resultSet.getString("authToken"), resultSet.getString("username"));
+                return new AuthData(resultSet.getString("username"), resultSet.getString("authToken"));
             } else {
                 return null;
             }

@@ -106,7 +106,7 @@ public class WebSocketHandler {
             onError(session, new DataAccessException("Game has not been created."));
             return;
         }
-        if ((command.getPlayerColor() == TeamColor.WHITE &&  !gameData.whiteUsername().equals(command.getUsername())) || (command.getPlayerColor() == TeamColor.BLACK && !Objects.equals(gameData.blackUsername(), command.getUsername()))){
+        if ((command.getPlayerColor() == TeamColor.WHITE && !gameData.whiteUsername().equals(command.getUsername())) || (command.getPlayerColor() == TeamColor.BLACK && !Objects.equals(gameData.blackUsername(), command.getUsername()))){
             onError(session, new DataAccessException("Username already taken"));
             return;
         }
