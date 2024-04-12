@@ -41,7 +41,7 @@ public class ServerFacadeTests {
 
         try {
             authResult = serverFacade.registerUser(username, password, email);
-        } catch (DataAccessException ex) {
+        } catch (exception.DataAccessException ex) {
             Assertions.fail("Registration failed unexpectedly: " + ex.getMessage());
         }
         Assertions.assertNotNull(authResult, "AuthData should not be null after successful registration.");
@@ -56,8 +56,8 @@ public class ServerFacadeTests {
         try {
             serverFacade.registerUser(username, password, email);
             Assertions.fail("Expected exception");
-        } catch (DataAccessException e) {
-            Assertions.assertEquals("Error\n", e.getMessage());
+        } catch (exception.DataAccessException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -70,8 +70,8 @@ public class ServerFacadeTests {
         try {
             serverFacade.registerUser(username, password, email);
             serverFacade.registerUser(username, password, email);
-        } catch (DataAccessException e) {
-            Assertions.assertEquals("Error\n", e.getMessage());
+        } catch (exception.DataAccessException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -89,8 +89,8 @@ public class ServerFacadeTests {
 
             Assertions.assertNotNull(test);
 
-        } catch (DataAccessException e) {
-            Assertions.assertEquals("Error\n", e.getMessage());
+        } catch (exception.DataAccessException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -108,7 +108,7 @@ public class ServerFacadeTests {
 
             Assertions.fail("Cannot login user");
 
-        } catch (DataAccessException e) {
+        } catch (exception.DataAccessException e) {
             Assertions.assertEquals("Error\n", e.getMessage());
         }
     }
@@ -122,7 +122,7 @@ public class ServerFacadeTests {
         try {
             AuthData authData = serverFacade.registerUser(username, password, email);
             serverFacade.logout(authData.authToken());
-        } catch (DataAccessException e) {
+        } catch (exception.DataAccessException e) {
             Assertions.assertEquals("Error\n", e.getMessage());
         }
     }
@@ -137,7 +137,7 @@ public class ServerFacadeTests {
             AuthData authData = serverFacade.registerUser(username, password, email);
             serverFacade.logout(authData.authToken());
             serverFacade.logout(authData.authToken());
-        } catch (DataAccessException e) {
+        } catch (exception.DataAccessException e) {
             Assertions.assertEquals("Error\n", e.getMessage());
         }
     }
@@ -157,7 +157,7 @@ public class ServerFacadeTests {
             serverFacade.createGame(authData.authToken(), "testGame3");
             var games = serverFacade.listGames(authData.authToken());
             Assertions.assertNotNull(games);
-        } catch (DataAccessException e) {
+        } catch (exception.DataAccessException e) {
             Assertions.fail("Error" + e.getMessage());
         }
     }
@@ -177,7 +177,7 @@ public class ServerFacadeTests {
             serverFacade.listGames("wrongToken");
             Assertions.fail("Expected exception");
         }
-        catch (DataAccessException e) {
+        catch (exception.DataAccessException e) {
             Assertions.assertEquals("Error\n", e.getMessage());
         }
     }
@@ -194,7 +194,7 @@ public class ServerFacadeTests {
             serverFacade.createGame(authData.authToken(), "testGame1");
             var games = serverFacade.listGames(authData.authToken());
             Assertions.assertNotNull(games);
-        } catch (DataAccessException e) {
+        } catch (exception.DataAccessException e) {
             Assertions.fail("Error\n" + e.getMessage());
         }
     }
@@ -211,7 +211,7 @@ public class ServerFacadeTests {
             Assertions.assertNotNull(authData);
             serverFacade.createGame("Wrong Token", "testGame1");
             Assertions.fail("Expected exception");
-        } catch (DataAccessException e) {
+        } catch (exception.DataAccessException e) {
             Assertions.assertEquals("Error\n", e.getMessage());
         }
     }
@@ -231,7 +231,7 @@ public class ServerFacadeTests {
             Assertions.assertNotNull(games);
             var result = serverFacade.joinGame(authData.authToken(), games.games().get(0).gameID(), "white");
             Assertions.assertNotNull(result);
-        } catch (DataAccessException e) {
+        } catch (exception.DataAccessException e) {
             Assertions.fail("Error\n" + e.getMessage());
         }
     }
@@ -251,7 +251,7 @@ public class ServerFacadeTests {
             Assertions.assertNotNull(games);
             serverFacade.joinGame(authData.authToken(), -1, "white");
             Assertions.fail("Expected exception");
-        } catch (DataAccessException e) {
+        } catch (exception.DataAccessException e) {
             Assertions.assertEquals("Error\n", e.getMessage());
         }
     }
