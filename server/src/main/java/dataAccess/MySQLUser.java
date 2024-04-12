@@ -6,7 +6,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class mySQLUser implements UserDataDAO {
+public class MySQLUser implements UserDataDAO {
     public void createUser(UserData user) throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
             String create = "INSERT INTO user (username, password, email) VALUES (?, ?, ?)";

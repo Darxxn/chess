@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
-public class mySQLAuth implements AuthDataDAO {
+public class MySQLAuth implements AuthDataDAO {
     public String createAuth(String username) throws DataAccessException {
         UUID uuid = UUID.randomUUID();
         try (Connection conn = DatabaseManager.getConnection()) {

@@ -7,7 +7,7 @@ import request.LoginRequest;
 import request.RegisterRequest;
 
 public class UserService {
-    private final mySQLUser userDAO = new mySQLUser();
+    private final MySQLUser userDAO = new MySQLUser();
 
     public String add(RegisterRequest user) throws DataAccessException {
         if (userDAO.readUser(user.username()) != null) {

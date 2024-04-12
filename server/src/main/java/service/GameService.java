@@ -11,7 +11,7 @@ import model.GameData;
 import result.ListGamesResponse;
 
 public class GameService {
-    private final mySQLGame gameDAO = new mySQLGame();
+    private final MySQLGame gameDAO = new MySQLGame();
 
     public void clear() throws DataAccessException {
         gameDAO.deleteAllGameData();

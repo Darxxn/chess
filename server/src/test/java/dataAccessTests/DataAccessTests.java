@@ -12,9 +12,9 @@ import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DataAccessTests {
-    private final mySQLUser userDAO = new mySQLUser();
-    private final mySQLAuth authDAO = new mySQLAuth();
-    private final mySQLGame gameDAO = new mySQLGame();
+    private final MySQLUser userDAO = new MySQLUser();
+    private final MySQLAuth authDAO = new MySQLAuth();
+    private final MySQLGame gameDAO = new MySQLGame();
 
     UserData user = new UserData("nappy", "pass1", "email@gmail.com");
 

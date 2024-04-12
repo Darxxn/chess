@@ -5,7 +5,7 @@ import request.LoginRequest;
 import request.RegisterRequest;
 
 public class DataService {
-    private final mySQLAuth authDAO = new mySQLAuth();
+    private final MySQLAuth authDAO = new MySQLAuth();
 
     public String add(RegisterRequest user) throws DataAccessException {
         return authDAO.createAuth(user.username());

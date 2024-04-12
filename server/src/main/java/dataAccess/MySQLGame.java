@@ -2,13 +2,12 @@ package dataAccess;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
-import model.AuthData;
 import model.GameData;
 
 import java.sql.*;
 import java.util.ArrayList;
 
-public class mySQLGame implements GameDataDAO {
+public class MySQLGame implements GameDataDAO {
     public void createGame(GameData game) throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
             String create = "INSERT INTO game (gameID, whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?, ?)";
