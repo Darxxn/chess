@@ -15,10 +15,6 @@ public class MemoryAuthDAO {
         return uuid.toString();
     }
 
-    public void deleteAllAuthData() {
-        authDataHashMap.clear();
-    }
-
     public AuthData readAuth(String authToken) {
         return authDataHashMap.get(authToken);
     }

@@ -13,8 +13,4 @@ public class MemoryUserDAO {
     public UserData readUser(String username) {
         return userDataHashMap.get(username);
     }
-
-    public void deleteAllGames() {
-        userDataHashMap.clear();
-    }
 }
