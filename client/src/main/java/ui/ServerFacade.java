@@ -1,6 +1,5 @@
 package ui;
 
-//import dataAccess.DataAccessException;
 import exception.DataAccessException;
 import model.*;
 import request.JoinGameRequest;

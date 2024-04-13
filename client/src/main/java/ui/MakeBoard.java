@@ -294,6 +294,20 @@ public class MakeBoard implements GameHandler {
         this.gameData = new GameData(this.gameData.gameID(), this.gameData.whiteUsername(), this.gameData.blackUsername(), this.gameData.gameName(), game);
         System.out.println("\n" + displayGame(this.color) + "\n");
         System.out.print(EscapeSequences.SET_TEXT_BOLD + playerColor + " >>>> " + EscapeSequences.RESET_TEXT_BOLD_FAINT);
+
+        //Determine and display if the game is in Checkmate, Check, or Stalemate
+        if (game.isInCheckmate(game.getTeamTurn())) {
+            printMessage("King is in Checkmate! Game is over.");
+        }
+
+        else if (game.isInCheck(game.getTeamTurn())) {
+            printMessage("King is in Check!");
+        }
+
+        else if (game.isInStalemate(game.getTeamTurn())) {
+            printMessage("Game is in Stalemate!");
+            printMessage("Game is over.");
+        }
     }
 
     @Override
