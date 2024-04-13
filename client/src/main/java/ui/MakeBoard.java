@@ -295,7 +295,6 @@ public class MakeBoard implements GameHandler {
         System.out.println("\n" + displayGame(this.color) + "\n");
         System.out.print(EscapeSequences.SET_TEXT_BOLD + playerColor + " >>>> " + EscapeSequences.RESET_TEXT_BOLD_FAINT);
 
-        //Determine and display if the game is in Checkmate, Check, or Stalemate
         if (game.isInCheckmate(game.getTeamTurn())) {
             printMessage("King is in Checkmate! Game is over.");
         }
